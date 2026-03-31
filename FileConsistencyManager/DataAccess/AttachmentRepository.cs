@@ -26,8 +26,8 @@ namespace FileConsistencyManager.DataAccess
                 {
                     connection.Open();
 
-                    //string query = @"SELECT Id, FileName, FilePath FROM Attachments"; 
-                    string query = @"SELECT * FROM AiEmbeddings"; 
+                    //Test Query
+                    string query = @"SELECT ATTACHID AS Id, FILENAME AS Filename, DESCRIPTION AS Description FROM ATTACHMENT"; 
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -37,7 +37,8 @@ namespace FileConsistencyManager.DataAccess
                             {
                                 attachments.Add(new Attachment
                                 {
-                                    Id = reader.GetInt64(0),
+                                    //Id = reader.GetInt64(0),
+                                    Id = reader.GetString(0),
                                     FileName = reader.GetString(1),
                                     FilePath = reader.GetString(2)
                                 });
