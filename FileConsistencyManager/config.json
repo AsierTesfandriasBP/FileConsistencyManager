@@ -1,0 +1,12 @@
+{
+  "Database": {
+    "ConnectionString": "Server=SERVERNAME;Database=CRM_DB;Trusted_Connection=True;"
+  },
+  "FileSystem": {
+    "RootPath": "C:\\Daten\\Attachments"
+  },
+  "Logging": {
+    "LogFilePath": "_log.txt",
+    "LogLevel": "Info"
+  }
+}
