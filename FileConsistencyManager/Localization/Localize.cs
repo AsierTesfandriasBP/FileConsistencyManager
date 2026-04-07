@@ -76,8 +76,8 @@ namespace FileConsistencyManager.Localization
             { "DeleteButtonToolTip", "Löscht die ausgewählten Dateien/Datenbank Einträge" },
             { "ArchiveButtonToolTip", "Verschiebt Dateien ins Archiv" },
             { "IgnoreButtonToolTip", "Markiert Einträge als ignoriert" },
-            { "MissingFilesLabel", "Fehlende Dateien: {0}"},
-            { "OrphanFilesLabel", "Verwaiste Dateien: {0}"},
+            { "MissingFilesLabel", "Fehlende Dateien:"},
+            { "OrphanFilesLabel", "Verwaiste Dateien:"},
         };
 
         public Dictionary<string, string> en = new Dictionary<string, string>()
@@ -105,8 +105,8 @@ namespace FileConsistencyManager.Localization
             { "DeleteButtonToolTip", "Deletes all selected Files/Database Entries" },
             { "ArchiveButtonToolTip", "Moves the Files to the archive" },
             { "IgnoreButtonToolTip", "Marks all selected entries as ignored" },
-            { "MissingFilesLabel", "Missing Files: {0}"},
-            { "OrphanFilesLabel", "Orphan Files: {0}"},
+            { "MissingFilesLabel", "Missing Files:"},
+            { "OrphanFilesLabel", "Orphan Files:"},
         };
     }
 }

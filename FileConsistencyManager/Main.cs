@@ -128,8 +128,8 @@ namespace FileConsistencyManager
                 var missingFiles = _allResults.Count(r => r.Types == IssueType.Types.MissingFile);
                 var orphanFiles = _allResults.Count(r => r.Types == IssueType.Types.OrphanFile);
 
-                lblMissing.Text = string.Format(_localization.GetContent("MissingFilesLabel", lang), missingFiles);
-                lblMissing.Text = string.Format(_localization.GetContent("OrphanFilesLabel", lang), orphanFiles);
+                lblMissingCount.Text = missingFiles.ToString();
+                lblOrphanCount.Text = orphanFiles.ToString();
             }
             catch (Exception ex)
             {
@@ -234,6 +234,8 @@ namespace FileConsistencyManager
             // Labels
             lblCmbFilterTitle.Text = lang["FilterOptionsTitle"];
             lblCmbLanguageTitle.Text = lang["FilterLanguageTitle"];
+            lblMissing.Text = lang["MissingFilesLabel"];
+            lblOrphan.Text = lang["OrphanFilesLabel"];
         }
 
         private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
@@ -268,8 +270,12 @@ namespace FileConsistencyManager
 
             // Needs connection string from config file, needs to be encrypted -> AES? Maybe Login Page and safe last used connection?
             string conn = _config.Database.ConnectionString;
+
+            // Need the Info of the Path around here already!
+
+
             // Path info comes from CRM Database entry
-            string rootPath = _config.FileSystem.RootPath;
+            //string rootPath = _config.FileSystem.RootPath;
 
             var repository = new AttachmentRepository(_config.Database.ConnectionString);
             var fileService = new FileService();
@@ -295,7 +301,8 @@ namespace FileConsistencyManager
 
             UpdateProgress(50, showText: false);
 
-            var results = manager.RunCheck(_config.FileSystem.RootPath);
+            // "Placeholder: Filepath of the Attachment"
+            var results = manager.RunCheck();
 
             UpdateProgress(100);
 
@@ -466,7 +473,7 @@ namespace FileConsistencyManager
         {
             // Connection works as intended. Need to setup a secure config file -> AES?, Maybe Login Page and safe last used connection? 
             //string conn = "Server=;Database=;User Id=;Password=;TrustServerCertificate=;";
-            string conn = "Server=;Database=;User Id=;Password=;TrustServerCertificate=;";
+            string conn = _config.Database.ConnectionString;
 
             var repo = new AttachmentRepository(conn);
             var data = repo.GetAllAttachments();

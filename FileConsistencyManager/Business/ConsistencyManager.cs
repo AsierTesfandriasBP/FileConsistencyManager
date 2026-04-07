@@ -27,7 +27,7 @@ namespace FileConsistencyManager.Business
             _logger = logger;
         }
 
-        public List<ComparisonResult> RunCheck(string rootPath)
+        public List<ComparisonResult> RunCheck()
         {
             try
             {
@@ -39,7 +39,7 @@ namespace FileConsistencyManager.Business
                 _logger.Log($"Geladene DB-Einträge: {attachments.Count}", LogLevel.Info);
 
                 // Load files
-                var files = _fileService.GetAllFiles(rootPath);
+                var files = _fileService.GetAllFiles(_repository.GetRootPath());
                 _logger.Log($"Gefundene Dateien: {files.Count}", LogLevel.Info);
 
                 // Compare and get results

@@ -41,6 +41,8 @@
             lblStatus = new Label();
             lblMissing = new Label();
             lblOrphan = new Label();
+            lblMissingCount = new Label();
+            lblOrphanCount = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvResults).BeginInit();
             SuspendLayout();
             // 
@@ -148,24 +150,44 @@
             lblMissing.AutoSize = true;
             lblMissing.Location = new Point(12, 9);
             lblMissing.Name = "lblMissing";
-            lblMissing.Size = new Size(128, 25);
+            lblMissing.Size = new Size(116, 25);
             lblMissing.TabIndex = 12;
-            lblMissing.Text = "Missing Files: /";
+            lblMissing.Text = "Missing Files:";
             // 
             // lblOrphan
             // 
             lblOrphan.AutoSize = true;
             lblOrphan.Location = new Point(12, 40);
             lblOrphan.Name = "lblOrphan";
-            lblOrphan.Size = new Size(127, 25);
+            lblOrphan.Size = new Size(115, 25);
             lblOrphan.TabIndex = 13;
-            lblOrphan.Text = "Orphan Files: /";
+            lblOrphan.Text = "Orphan Files:";
+            // 
+            // lblMissingCount
+            // 
+            lblMissingCount.AutoSize = true;
+            lblMissingCount.Location = new Point(174, 9);
+            lblMissingCount.Name = "lblMissingCount";
+            lblMissingCount.Size = new Size(19, 25);
+            lblMissingCount.TabIndex = 14;
+            lblMissingCount.Text = "/";
+            // 
+            // lblOrphanCount
+            // 
+            lblOrphanCount.AutoSize = true;
+            lblOrphanCount.Location = new Point(174, 40);
+            lblOrphanCount.Name = "lblOrphanCount";
+            lblOrphanCount.Size = new Size(19, 25);
+            lblOrphanCount.TabIndex = 15;
+            lblOrphanCount.Text = "/";
             // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1224, 645);
+            Controls.Add(lblOrphanCount);
+            Controls.Add(lblMissingCount);
             Controls.Add(lblOrphan);
             Controls.Add(lblMissing);
             Controls.Add(lblStatus);
@@ -203,5 +225,7 @@
         private Label lblStatus;
         private Label lblMissing;
         private Label lblOrphan;
+        private Label lblMissingCount;
+        private Label lblOrphanCount;
     }
 }

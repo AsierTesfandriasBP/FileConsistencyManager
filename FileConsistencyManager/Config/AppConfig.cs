@@ -7,7 +7,7 @@ namespace FileConsistencyManager.Config
     public class AppConfig
     {
         public DatabaseConfig Database { get; set; }
-        public FileSystemConfig FileSystem { get; set; }
+        //public FileSystemConfig FileSystem { get; set; }
         public LoggingConfig Logging { get; set; }
     }
 
@@ -16,10 +16,12 @@ namespace FileConsistencyManager.Config
         public string ConnectionString { get; set; }
     }
 
+    /*
     public class FileSystemConfig
     {
         public string RootPath { get; set; }
     }
+    */
 
     public class LoggingConfig
     {

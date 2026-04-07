@@ -10,10 +10,16 @@ namespace FileConsistencyManager.DataAccess
     internal class AttachmentRepository
     {
         private readonly string _connectionString;
+        private string _rootPath;
 
         public AttachmentRepository(string connectionString)
         {
             _connectionString = connectionString;
+        }
+
+        public string GetRootPath()
+        {
+            return _rootPath;
         }
 
         public List<Attachment> GetAllAttachments()
@@ -27,7 +33,7 @@ namespace FileConsistencyManager.DataAccess
                     connection.Open();
 
                     //Test Query
-                    string query = @"SELECT ATTACHID AS Id, FILENAME AS Filename, DESCRIPTION AS Description FROM ATTACHMENT"; 
+                    string query = @"SELECT A.ATTACHID AS Id, A.FILENAME AS Filename, B.ATTACHMENTPATH AS Filepath FROM ATTACHMENT A CROSS JOIN BRANCHOPTIONS B"; 
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -35,12 +41,15 @@ namespace FileConsistencyManager.DataAccess
                         {
                             while (reader.Read())
                             {
+                                if(_rootPath != reader.GetString(2) || _rootPath == string.Empty)
+                                    _rootPath = reader.GetString(2);
+
                                 attachments.Add(new Attachment
                                 {
                                     //Id = reader.GetInt64(0),
                                     Id = reader.GetString(0),
                                     FileName = reader.GetString(1),
-                                    FilePath = reader.GetString(2)
+                                    FilePath = reader.GetString(2) + "\\" + reader.GetString(1)
                                 });
                             }
                         }

@@ -10,6 +10,8 @@ namespace FileConsistencyManager.Config
         public static AppConfig Load(string path = "config.json")
         {
             var json = File.ReadAllText(path);
+
+            // Check for empty values
             return JsonSerializer.Deserialize<AppConfig>(json);
         }
     }
