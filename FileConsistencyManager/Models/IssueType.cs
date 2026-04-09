@@ -9,8 +9,9 @@ namespace FileConsistencyManager.Models
         // Enum to represent the types of issues found during the comparison.
         public enum Types
         {
-            MissingFile,   // missing file
-            OrphanFile     // no database entry
+            Exists,        // no issue, file and db-entry match
+            MissingFile,   // only db-entry exists, no file
+            OrphanFile     // only File exists, no db-entry
         }
     }
 }

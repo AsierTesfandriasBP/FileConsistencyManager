@@ -8,7 +8,7 @@ namespace FileConsistencyManager.Models
     {
         // Represents the result of comparing a file entry with the database attachments.
         public string FileName { get; set; }
-        public string Path { get; set; }
-        public IssueType.Types Types { get; set; }
+        public string Source { get; set; }
+        public IssueType.Types Type { get; set; }
     }
 }

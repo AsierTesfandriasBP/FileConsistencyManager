@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using FileConsistencyManager.Models;
-using System.Data;
+using FileConsistencyManager.Logging;
+
 
 namespace FileConsistencyManager.DataAccess
 {
@@ -11,10 +13,12 @@ namespace FileConsistencyManager.DataAccess
     {
         private readonly string _connectionString;
         private string _rootPath;
+        private readonly Logger _logger;
 
-        public AttachmentRepository(string connectionString)
+        public AttachmentRepository(string connectionString, Logger logger)
         {
             _connectionString = connectionString;
+            _logger = logger;
         }
 
         public string GetRootPath()
@@ -32,7 +36,6 @@ namespace FileConsistencyManager.DataAccess
                 {
                     connection.Open();
 
-                    //Test Query
                     string query = @"SELECT A.ATTACHID AS Id, A.FILENAME AS Filename, B.ATTACHMENTPATH AS Filepath FROM ATTACHMENT A CROSS JOIN BRANCHOPTIONS B"; 
 
                     using (SqlCommand command = new SqlCommand(query, connection))
@@ -46,10 +49,9 @@ namespace FileConsistencyManager.DataAccess
 
                                 attachments.Add(new Attachment
                                 {
-                                    //Id = reader.GetInt64(0),
                                     Id = reader.GetString(0),
                                     FileName = reader.GetString(1),
-                                    FilePath = reader.GetString(2) + "\\" + reader.GetString(1)
+                                    Source = reader.GetString(2)
                                 });
                             }
                         }
@@ -58,8 +60,8 @@ namespace FileConsistencyManager.DataAccess
             }
             catch (Exception ex)
             {
-                // use logging framework here
-                throw new Exception("Fehler beim Laden der Attachments: " + ex.Message);
+                _logger.LogException(ex);
+                throw;
             }
 
             return attachments;

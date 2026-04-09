@@ -27,7 +27,7 @@ namespace FileConsistencyManager.Business
             _logger = logger;
         }
 
-        public List<ComparisonResult> RunCheck()
+        public List<ComparisonResult> RunCheck(string databaseName)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace FileConsistencyManager.Business
                 _logger.Log($"Gefundene Dateien: {files.Count}", LogLevel.Info);
 
                 // Compare and get results
-                var results = _comparisonService.Compare(attachments, files);
+                var results = _comparisonService.Compare(attachments, files, databaseName);
                 _logger.Log($"Gefundene Inkonsistenzen: {results.Count}", LogLevel.Info);
 
                 return results;

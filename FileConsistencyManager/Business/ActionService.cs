@@ -1,8 +1,10 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
+﻿using FileConsistencyManager.Logging;
 using FileConsistencyManager.Models;
-using FileConsistencyManager.Logging;
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Net.Mail;
+using System.Text;
 
 namespace FileConsistencyManager.Business
 {
@@ -15,18 +17,20 @@ namespace FileConsistencyManager.Business
             _logger = logger;
         }
 
-        public void DeleteFile(string path)
+        #region Delete
+
+        public void DeleteFile(string path, List<ComparisonResult> OrphanFiles)
         {
             try
             {
                 if (File.Exists(path))
                 {
                     File.Delete(path);
-                    _logger.Log($"File deleted: {path}", LogLevel.Info);
+                    _logger.Log($"Orphan file deleted: {path}", LogLevel.Info);
                 }
                 else
                 {
-                    _logger.Log($"File was not found: {path}", LogLevel.Warning);
+                    _logger.Log($"Orphan file was not found: {path}", LogLevel.Warning);
                 }
             }
             catch (Exception ex)
@@ -36,15 +40,93 @@ namespace FileConsistencyManager.Business
             }
         }
 
-        public void IgnoreEntry(ComparisonResult result)
+        public void DeleteEntry(ComparisonResult result, string _connectionString, List<ComparisonResult> missingFiles)
         {
-            _logger.Log($"Entry ignored: {result.FileName} ({result.Types})", LogLevel.Info);
+            try
+            {
+                string test = @"DELETE FROM ATTACHMENT WHERE ATTACHID IN ('eDEMOA000001', 'eDEMOA000002');";
+
+                string test2 = GetMissingFilesAsStringListForQuery(missingFiles);
+
+                string test3 = $@"DELETE FROM ATTACHMENT WHERE ATTACHID IN ({test2});";
+
+                /*
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    string query = @"DELETE FROM ATTACHMENT WHERE ATTACHID IN ('eDEMOA000001', 'eDEMOA000002');";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+                */
+
+                //_logger.Log($"Database entry successfully deleted: {result.FileName} ({result.Types})", LogLevel.Info);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex);
+                throw;
+            }
         }
 
-        public void ArchiveFile(string path, string archivePath)
+        #endregion
+
+        #region Ignore
+
+        public void IgnoreEntry(ComparisonResult result)
         {
-            // Archivierungslogik hier implementieren
-            _logger.Log($"File archived: {archivePath}", LogLevel.Info);
+            _logger.Log($"Entry ignored: {result.FileName} ({result.Type})", LogLevel.Info);
         }
+
+        #endregion
+
+        #region Archive
+
+        public void ArchiveFile(ComparisonResult sourcePath, string archivePath)
+        {
+            try
+            {
+                if (sourcePath.Type != IssueType.Types.OrphanFile)
+                    return;
+
+                if (!Directory.Exists(archivePath))
+                    Directory.CreateDirectory(archivePath);
+
+                string targetPath = Path.Combine(archivePath, Path.GetFileName(sourcePath.Source));
+
+                File.Move(sourcePath.Source, targetPath);
+
+                _logger.Log($"File archived: {sourcePath.Source} to {targetPath}", LogLevel.Info);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex);
+                throw;
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        public string GetMissingFilesAsStringListForQuery(List<ComparisonResult> missingFiles)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // Builds a string in the format: 'Id_1', 'Id_2', 'Id_3' for the SQL Query
+            foreach (var file in missingFiles)
+            {
+                sb.Append($"'{file.FileName}', ");
+            }
+
+            // Removes last comma and space
+            sb.Replace(", ", "", sb.Length - 2, 2);
+
+            return sb.ToString();
+        }
+
+        #endregion
     }
 }
