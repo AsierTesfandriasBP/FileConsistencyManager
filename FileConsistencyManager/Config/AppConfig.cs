@@ -8,7 +8,6 @@ namespace FileConsistencyManager.Config
     {
         public DatabaseConfig Connection { get; set; }
         public PathConfig Path { get; set; }
-        public LoggingConfig Logging { get; set; }
     }
 
     public class DatabaseConfig
@@ -21,10 +20,5 @@ namespace FileConsistencyManager.Config
     public class PathConfig
     {
         public string? ArchivePath { get; set; }
-    }
-    public class LoggingConfig
-    {
-        public string? LogFilePath { get; set; }
-        public string? LogLevel { get; set; }
     }
 }

@@ -27,24 +27,27 @@ namespace FileConsistencyManager.Business
             _logger = logger;
         }
 
-        public List<ComparisonResult> RunCheck(string databaseName)
+        public List<ComparisonResult> RunCheck(string databaseName, bool logText=true)
         {
             try
             {
-                _logger.Log("", LogLevel.Info);
-                _logger.LogSeparator("Starte Konsistenzprüfung...");
+                if (logText)
+                {
+                    _logger.Log("", LogLevel.Info);
+                    _logger.LogSeparator("Starting consistency check");
+                }
 
                 // Load database entries
                 var attachments = _repository.GetAllAttachments();
-                _logger.Log($"Geladene DB-Einträge: {attachments.Count}", LogLevel.Info);
+                if (logText) _logger.Log($"Loaded database entries: {attachments.Count}", LogLevel.Info);
 
                 // Load files
                 var files = _fileService.GetAllFiles(_repository.GetRootPath());
-                _logger.Log($"Gefundene Dateien: {files.Count}", LogLevel.Info);
+                if (logText) _logger.Log($"Found files: {files.Count}", LogLevel.Info);
 
                 // Compare and get results
                 var results = _comparisonService.Compare(attachments, files, databaseName);
-                _logger.Log($"Gefundene Inkonsistenzen: {results.Count}", LogLevel.Info);
+                if (logText) _logger.Log($"Found entries: {results.Count}", LogLevel.Info);
 
                 return results;
             }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FileConsistencyManager.Localization
 {
-    internal class Localize
+    public class Localize
     {
         private string currentLanguage;
 
@@ -67,7 +67,6 @@ namespace FileConsistencyManager.Localization
             { "FilterExistsTitle", "Vorhandene Dateien" },
             { "FilterOptionsTitle", "Filter:" },
             { "FilterLanguageTitle", "Sprache:" },
-            { "ConfirmTitle", "Bestätigung" },
             { "ConfirmMultipleMessageDE", "Möchten Sie wirklich {1} Einträge {0}?"},
             { "ConfirmMessage", "Möchten Sie diesen Eintrag {0}?" },
             { "AfterItemCountMessage", "Bitte wählen Sie mindestens einen Eintrag aus." },
@@ -84,6 +83,13 @@ namespace FileConsistencyManager.Localization
             { "DGVHeaderFile", "Datei" },
             { "DGVHeaderPath", "Quelle" },
             { "DGVHeaderType", "Typ" },
+            { "CustomTextOK", "OK" },
+            { "CustomTextCancel", "Abbrechen" },
+            { "CustomTextYes", "Ja" },
+            { "CustomTextNo", "Nein" },
+            { "CustomTextInformation", "Information" },
+            { "CustomTextWarning", "Warnung" },
+            { "CustomTextError", "Fehler" },
         };
 
         public Dictionary<string, string> en = new Dictionary<string, string>()
@@ -102,7 +108,6 @@ namespace FileConsistencyManager.Localization
             { "FilterExistsTitle", "Existing Entries" },
             { "FilterOptionsTitle", "Filter:" },
             { "FilterLanguageTitle", "Language:" },
-            { "ConfirmTitle", "Confirmation" },
             { "ConfirmMultipleMessageEN", "Are you sure you want to {0} {1} entries?"},
             { "ConfirmMessage", "Are you sure you want to {0} this entry?" },
             { "AfterItemCountMessage", "Please pick atleast one Entry." },
@@ -119,6 +124,13 @@ namespace FileConsistencyManager.Localization
             { "DGVHeaderFile", "File" },
             { "DGVHeaderPath", "Source" },
             { "DGVHeaderType", "Type" },
+            { "CustomTextOK", "OK" },
+            { "CustomTextCancel", "Cancel" },
+            { "CustomTextYes", "Yes" },
+            { "CustomTextNo", "No" },
+            { "CustomTextInformation", "Information" },
+            { "CustomTextWarning", "Warning" },
+            { "CustomTextError", "Error" },
         };
     }
 }

@@ -9,27 +9,44 @@ using System.Text;
 
 namespace FileConsistencyManager
 {
-    public partial class Main : Form
+    internal partial class Main : Form
     {
         #region Initialization and Setup
 
         private AppConfig _config;
+        private ConfigLoader _configLoader;
         private Logger _logger;
         private Localize _localization = new Localize(currentLanguage: "en");
         private List<ComparisonResult> _allResults = new List<ComparisonResult>();
 
         public Main()
         {
+            SetupLogger();
+            
+            // Initialize ConfigLoader with localization
+            _configLoader = new ConfigLoader("config.json", _localization);
+
             // load data from json config file
-            _config = ConfigLoader.Load();
+            _config = _configLoader.Load(_logger);
 
             // Initializations & Setup for Combobox and GridView
             InitializeComponent();
-            SetupGrid();
-            SetupButtons();
-            SetupComboboxOptions();
-            SetupComboboxLanguage();
-            ApplyLanguage(_localization.GetCurrentLanguageDictionary());
+            SetupUI();
+
+            if (_config == null)
+            {
+                // Insert Method to open configuration Forms
+                _logger.Log("Configuration loading failed.", LogLevel.Error);
+                CustomMessageBox.Show("Configuration loading failed. Please check the logs for details.", 
+                    "Error", 
+                    CustomMessageBoxTypes.CustomMessageBoxButtons.OK, 
+                    CustomMessageBoxTypes.CustomMessageBoxIcon.Error, 
+                    _localization);
+
+                //MessageBox.Show("Configuration loading failed. Please check the logs for details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+                return;
+            }
 
             // Temporary Testing
             //TestDatabaseConnection();
@@ -44,6 +61,26 @@ namespace FileConsistencyManager
                 .Append(";Password=").Append(_config.Connection.Password)
                 .Append(";TrustServerCertificate=True;");
             return sb.ToString();
+        }
+
+        private void SetupLogger()
+        {
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string logFolder = Path.Combine(basePath, "Logs");
+            string logFilePath = Path.Combine(logFolder, "_log.txt");
+            if (!Directory.Exists(logFolder))
+                Directory.CreateDirectory(logFolder);
+
+            _logger = new Logger(logFilePath, LogLevel.Info);
+        }
+
+        private void SetupUI()
+        {
+            SetupGrid();
+            SetupButtons();
+            SetupComboboxOptions();
+            SetupComboboxLanguage();
+            ApplyLanguage(_localization.GetCurrentLanguageDictionary());
         }
 
         private void SetupButtons()
@@ -142,6 +179,8 @@ namespace FileConsistencyManager
         {
             try
             {
+                //if() 
+
                 string lang = _localization.GetCurrentLanguage();
 
                 btnDelete.Enabled = false;
@@ -151,9 +190,11 @@ namespace FileConsistencyManager
                 SetStatus(_localization.GetContent("ProgressBarAnalyseStartMessage", lang));
                 pbProgress.Value = 0;
 
+                bool logText = sender != null ? true : false;
+
                 await Task.Run(() =>
                 {
-                    ExecuteRunScanWithProgress();
+                    ExecuteRunScanWithProgress(logText);
                 });
 
                 ApplyFilter();
@@ -330,7 +371,7 @@ namespace FileConsistencyManager
 
         #region Execute Methods
 
-        private void ExecuteRunScanWithProgress()
+        private void ExecuteRunScanWithProgress(bool logText)
         {
             string lang = _localization.GetCurrentLanguage();
 
@@ -344,26 +385,16 @@ namespace FileConsistencyManager
             FileService fileService = new FileService();
             ComparisonService comparisonService = new ComparisonService();
 
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string logFolder = Path.Combine(basePath, "Logs");  //check
-            string logFilePath = Path.Combine(logFolder, _config.Logging.LogFilePath!);
-
-            if (!Directory.Exists(logFolder))
-                Directory.CreateDirectory(logFolder);
-
-            LogLevel logLevel = Enum.Parse<LogLevel>(_config.Logging.LogLevel!);
-            Logger logger = new Logger(_config.Logging.LogFilePath!, logLevel);
-
             ConsistencyManager manager = new ConsistencyManager(
                 repository,
                 fileService,
                 comparisonService,
-                logger);
+                _logger);
 
             UpdateProgress(50, showText: false);
 
             string databaseName = _config.Connection.Server + "\\" + _config.Connection.Database;
-            List<ComparisonResult> results = manager.RunCheck(databaseName);
+            List<ComparisonResult> results = manager.RunCheck(databaseName, logText);
 
             UpdateProgress(100);
 
@@ -383,7 +414,12 @@ namespace FileConsistencyManager
             // if no Row was selected
             if (selectedItems.Count == 0)
             {
-                MessageBox.Show(_localization.GetContent("AfterItemCountMessage", lang));
+                CustomMessageBox.Show(_localization.GetContent("AfterItemCountMessage", lang),
+                    "",
+                    CustomMessageBoxTypes.CustomMessageBoxButtons.OK,
+                    CustomMessageBoxTypes.CustomMessageBoxIcon.Warning,
+                    _localization);
+                //MessageBox.Show();
                 return;
             }
 
@@ -419,21 +455,19 @@ namespace FileConsistencyManager
             //Button ok = new Button() { Text = _localization.GetContent("OKText", lang), DialogResult = DialogResult.OK };
             //Button cancel = new Button() { Text = _localization.GetContent("CancelText", lang), DialogResult = DialogResult.Cancel };
 
-            DialogResult confirm = MessageBox.Show(
-                message,
-                _localization.GetContent("ConfirmTitle", lang),
-                MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Warning
-                );
+            
 
-            if (confirm != DialogResult.OK)
+            CustomMessageBoxTypes.CustomDialogResult confirm = CustomMessageBox.Show(
+                message,
+                "",
+                CustomMessageBoxTypes.CustomMessageBoxButtons.OKCancel,
+                CustomMessageBoxTypes.CustomMessageBoxIcon.Warning,
+                _localization);
+
+            if (confirm != CustomMessageBoxTypes.CustomDialogResult.OK)
                 return;
 
-            Logger logger = new Logger(
-                _config.Logging.LogFilePath!,
-                Enum.Parse<LogLevel>(_config.Logging.LogLevel!));
-
-            ActionService actionService = new ActionService(logger);
+            ActionService actionService = new ActionService(_logger);
 
             foreach (ComparisonResult item in selectedItems)
             {
