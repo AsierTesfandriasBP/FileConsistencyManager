@@ -46,7 +46,12 @@
             dgvResults = new DataGridView();
             lblStatusCount = new Label();
             tip = new ToolTip(components);
+            statusStrip1 = new StatusStrip();
+            lblConnectionLabel = new ToolStripStatusLabel();
+            lblStatusLabel = new ToolStripStatusLabel();
+            toolStripProgressBar1 = new ToolStripProgressBar();
             ((System.ComponentModel.ISupportInitialize)dgvResults).BeginInit();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // btnStart
@@ -208,11 +213,39 @@
             lblStatusCount.Size = new Size(0, 15);
             lblStatusCount.TabIndex = 17;
             // 
+            // statusStrip1
+            // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblConnectionLabel, lblStatusLabel, toolStripProgressBar1 });
+            statusStrip1.Location = new Point(0, 420);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(854, 22);
+            statusStrip1.TabIndex = 18;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // lblConnectionLabel
+            // 
+            lblConnectionLabel.Name = "lblConnectionLabel";
+            lblConnectionLabel.Size = new Size(97, 17);
+            lblConnectionLabel.Text = "ConnectionLabel";
+            // 
+            // lblStatusLabel
+            // 
+            lblStatusLabel.Name = "lblStatusLabel";
+            lblStatusLabel.Size = new Size(609, 17);
+            lblStatusLabel.Spring = true;
+            lblStatusLabel.Text = "Status";
+            // 
+            // toolStripProgressBar1
+            // 
+            toolStripProgressBar1.Name = "toolStripProgressBar1";
+            toolStripProgressBar1.Size = new Size(100, 16);
+            // 
             // Main
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(857, 416);
+            ClientSize = new Size(854, 442);
+            Controls.Add(statusStrip1);
             Controls.Add(lblStatusCount);
             Controls.Add(dgvResults);
             Controls.Add(lblOrphanCount);
@@ -238,6 +271,8 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "FileConsistencyManager -|- Analyse- und Bereinigungstool";
             ((System.ComponentModel.ISupportInitialize)dgvResults).EndInit();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -262,5 +297,9 @@
         private DataGridView dgvResults;
         private Label lblStatusCount;
         private ToolTip tip;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel lblConnectionLabel;
+        private ToolStripStatusLabel lblStatusLabel;
+        private ToolStripProgressBar toolStripProgressBar1;
     }
 }

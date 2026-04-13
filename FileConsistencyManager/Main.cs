@@ -452,11 +452,6 @@ namespace FileConsistencyManager
                 message = _localization.GetContent("ConfirmMessage", lang);
             message = string.Format(message, actionText, selectedItems.Count);
 
-            //Button ok = new Button() { Text = _localization.GetContent("OKText", lang), DialogResult = DialogResult.OK };
-            //Button cancel = new Button() { Text = _localization.GetContent("CancelText", lang), DialogResult = DialogResult.Cancel };
-
-            
-
             CustomMessageBoxTypes.CustomDialogResult confirm = CustomMessageBox.Show(
                 message,
                 "",
@@ -469,23 +464,31 @@ namespace FileConsistencyManager
 
             ActionService actionService = new ActionService(_logger);
 
-            foreach (ComparisonResult item in selectedItems)
+            switch (actionType)
             {
-                switch (actionType)
-                {
-                    case ActionType.Delete:
-                        List<ComparisonResult> missingFiles = selectedItems.Where(r => r.Type == IssueType.Types.MissingFile).ToList();
-                        List<ComparisonResult> orphanFiles = selectedItems.Where(r => r.Type == IssueType.Types.OrphanFile).ToList();
-                        if (orphanFiles.Count > 0) actionService.DeleteFile(item.Source, orphanFiles);
-                        if(missingFiles.Count > 0) actionService.DeleteEntry(item, conn, missingFiles);
-                        break;
-                    case ActionType.Archive:
-                        actionService.ArchiveFile(item, $@"{_config.Path.ArchivePath}");
-                        break;
-                    case ActionType.Ignore:
-                        actionService.IgnoreEntry(item);
-                        break;
-                }
+                case ActionType.Delete:
+                    List<ComparisonResult> missingFiles = selectedItems.Where(r => r.Type == IssueType.Types.MissingFile).ToList();
+                    List<ComparisonResult> orphanFiles = selectedItems.Where(r => r.Type == IssueType.Types.OrphanFile).ToList();
+                    if (orphanFiles.Count > 0) actionService.DeleteFile(orphanFiles);
+                    if (missingFiles.Count > 0)
+                    {
+                        // Select all Ids from the selected missing files to delete the entries in the database
+                        AttachmentRepository allAttachments = new AttachmentRepository(conn, _logger);
+
+                        List<string> missingFilesAttachmentIdList = allAttachments.GetAllAttachments()
+                            .Where(a => missingFiles.Any(m => m.FileName == a.FileName))
+                            .Select(a => a.Id)
+                            .ToList();
+
+                        actionService.DeleteEntry(missingFilesAttachmentIdList, conn);
+                    }
+                    break;
+                case ActionType.Archive:
+                    actionService.ArchiveFile(selectedItems, $@"{_config.Path.ArchivePath}");
+                    break;
+                case ActionType.Ignore:
+                    actionService.IgnoreEntry(selectedItems);
+                    break;
             }
 
             MessageBox.Show(_localization.GetContent("ActionCompleteMessage", lang), "test", MessageBoxButtons.OK, MessageBoxIcon.Information);
