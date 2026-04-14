@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Data.SqlClient;
 using FileConsistencyManager.Models;
 using FileConsistencyManager.Logging;
+using FileConsistencyManager.Localization;
 
 
 namespace FileConsistencyManager.DataAccess

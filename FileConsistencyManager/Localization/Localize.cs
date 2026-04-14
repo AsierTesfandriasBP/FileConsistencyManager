@@ -53,84 +53,110 @@ namespace FileConsistencyManager.Localization
 
         public Dictionary<string, string> de = new Dictionary<string, string>()
         {
+            // Buttons
             { "Start", "Scan starten" },
             { "Delete", "Löschen [Dauerhaft]" },
             { "Ignore", "Ignorieren" },
             { "Archive", "Archivieren"},
+            // Filter Options
             { "Culture", "Deutsch" },
-            { "DeleteActionText", "löschen" },
-            { "IgnoreActionText", "ignorieren" },
-            { "ArchiveActionText", "archivieren" },
             { "FilterAll", "Alle" },
             { "FilterMissingFiles", "Fehlende Dateien"},
             { "FilterOrphanFiles", "Verwaiste Dateien" },
             { "FilterExistsTitle", "Vorhandene Dateien" },
+            // Filter Labels
             { "FilterOptionsTitle", "Filter:" },
             { "FilterLanguageTitle", "Sprache:" },
-            { "ConfirmMultipleMessageDE", "Möchten Sie wirklich {1} Einträge {0}?"},
+            // MessageBox Messages & Words to insert into Messages
+            { "DeleteActionText", "löschen" },
+            { "IgnoreActionText", "ignorieren" },
+            { "ArchiveActionText", "archivieren" },
+            { "ConfirmMultipleMessage", "Möchten Sie wirklich {1} Einträge {0}?"},
             { "ConfirmMessage", "Möchten Sie diesen Eintrag {0}?" },
             { "AfterItemCountMessage", "Bitte wählen Sie mindestens einen Eintrag aus." },
             { "ActionCompleteMessage", "Aktion abgeschlossen." },
+            // ProgressBar Labels
             { "ProgressBarAnalyseStartMessage", "Analyse läuft..." },
             { "ProgressBarAnalyseConnectionMessage", "Verbindung zur MSSQL-Datenbank wird aufgebaut..." },
             { "ProgressBarAnalyseDoneMessage", "Einträge gefunden!" },
             { "ProgressBarAnalyseStatusMessage", "Status: {0}%" },
+            // Tooltips
             { "DeleteButtonToolTip", "Löscht die ausgewählten Dateien/Datenbank Einträge" },
             { "ArchiveButtonToolTip", "Verschiebt Dateien ins Archiv" },
             { "IgnoreButtonToolTip", "Markiert Einträge als ignoriert" },
+            // Labels
             { "MissingFilesLabel", "Dateien in der Datenbank"},
             { "OrphanFilesLabel", "Dateien im Dateipfad"},
+            // DataGridView Headers
             { "DGVHeaderFile", "Datei" },
             { "DGVHeaderPath", "Quelle" },
             { "DGVHeaderType", "Typ" },
-            { "CustomTextOK", "OK" },
-            { "CustomTextCancel", "Abbrechen" },
-            { "CustomTextYes", "Ja" },
-            { "CustomTextNo", "Nein" },
+            // MessageBox Titles
             { "CustomTextInformation", "Information" },
             { "CustomTextWarning", "Warnung" },
             { "CustomTextError", "Fehler" },
+            // Config
+            { "ConfigNotFoundErrorMessage", "Konfigurationsdatei '{0}' nicht gefunden." },
+            { "ConfigLoadErrorMessage", "Laden der Konfigurationsdatei '{0}' fehlgeschlagen. Überprüfen Sie das Dateiformat und den Inhalt." },
+            { "ConfigDeserializeErrorMessage", "Fehler beim Deserialisieren der Konfigurationsdatei '{0}'. Bitte überprüfen Sie das Dateiformat und den Inhalt." },
+            { "ConfigParseErrorMessage", "Fehler beim Parsen der Konfigurationsdatei '{0}'. Bitte überprüfen Sie das Dateiformat und den Inhalt." },
+            { "ConfigUnexpectedErrorMessage", "Unerwarteter Fehler beim Laden der Konfigurationsdatei '{0}'. Bitte überprüfen Sie die Datei und versuchen Sie es erneut." },
+            { "ConfigSaveErrorMessage", "Fehler beim Schreiben der Konfigurationsdatei '{0}'. Bitte überprüfen Sie das Dateiformat und den Inhalt." },
+            { "ConfigSuccessfulSaveMessage", "Konfigurationsdatei '{0}' erfolgreich gespeichert." },
         };
 
         public Dictionary<string, string> en = new Dictionary<string, string>()
         {
+            // Buttons
             { "Start", "Start Scan" },
             { "Delete", "Delete [Permanent]" },
             { "Ignore", "Ignore" },
             { "Archive", "Archive" },
+            // Filter Options
             { "Culture", "English" },
-            { "DeleteActionText", "delete" },
-            { "IgnoreActionText", "ignore" },
-            { "ArchiveActionText", "archive" },
             { "FilterAll", "All" },
             { "FilterMissingFiles", "Missing Files"},
             { "FilterOrphanFiles", "Orphan Files" },
             { "FilterExistsTitle", "Existing Entries" },
+            // Filter Labels
             { "FilterOptionsTitle", "Filter:" },
             { "FilterLanguageTitle", "Language:" },
-            { "ConfirmMultipleMessageEN", "Are you sure you want to {0} {1} entries?"},
+            // MessageBox Messages & Words to insert into Messages
+            { "DeleteActionText", "deleted" },
+            { "IgnoreActionText", "ignored" },
+            { "ArchiveActionText", "archived" },
+            { "ConfirmMultipleMessage", "Are you sure you want {0} entries to be {1}?"},
             { "ConfirmMessage", "Are you sure you want to {0} this entry?" },
             { "AfterItemCountMessage", "Please pick atleast one Entry." },
             { "ActionCompleteMessage", "Action complete." },
+            // ProgressBar Labels
             { "ProgressBarAnalyseStartMessage", "Analysis starting..." },
             { "ProgressBarAnalyseConnectionMessage", "Trying to connect to MSSQL-Database..." },
             { "ProgressBarAnalyseDoneMessage", "entries found!" },
             { "ProgressBarAnalyseStatusMessage", "Status: {0}%" },
+            // Tooltips
             { "DeleteButtonToolTip", "Deletes all selected Files/Database Entries" },
             { "ArchiveButtonToolTip", "Moves the Files to the archive" },
             { "IgnoreButtonToolTip", "Marks all selected entries as ignored" },
+            // Labels
             { "MissingFilesLabel", "Files in Database"},
             { "OrphanFilesLabel", "Files in Filepath"},
+            // DataGridView Headers
             { "DGVHeaderFile", "File" },
             { "DGVHeaderPath", "Source" },
             { "DGVHeaderType", "Type" },
-            { "CustomTextOK", "OK" },
-            { "CustomTextCancel", "Cancel" },
-            { "CustomTextYes", "Yes" },
-            { "CustomTextNo", "No" },
+            // MessageBox Titles
             { "CustomTextInformation", "Information" },
             { "CustomTextWarning", "Warning" },
             { "CustomTextError", "Error" },
+            // Config
+            { "ConfigNotFoundErrorMessage", "Configuration file '{0}' not found." },
+            { "ConfigLoadErrorMessage", "Failed to load configuration file '{0}'. Please check the file format and content." },
+            { "ConfigDeserializeErrorMessage", "Failed to deserialize configuration file '{0}'. Please check the file format and content." },
+            { "ConfigParseErrorMessage", "Failed to parse configuration file '{0}'. Please check the file format and content." },
+            { "ConfigUnexpectedErrorMessage", "Unexpected error loading configuration file '{0}'. Please check the file and try again." },
+            { "ConfigSaveErrorMessage", "Error writing configuration to file '{0}'. Please check the file format and content." },
+            { "ConfigSuccessfulSaveMessage", "Configuration file '{0}' saved successfully." },
         };
     }
 }

@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using FileConsistencyManager.Logging;
 using FileConsistencyManager.Models;
 using FileConsistencyManager.Localization;
+using FileConsistencyManager.Security;
 
 namespace FileConsistencyManager.Config
 {
@@ -21,20 +22,29 @@ namespace FileConsistencyManager.Config
             this._localization = localization;
         }
 
-        public AppConfig Load(Logger logger)
+        public AppConfig Load(Logger logger, bool showDialogs = false)
         {
-            AppConfig config = CreateDefaultConfig();
+            AppConfig config = null;
+            var fullPath = Path.Combine(AppContext.BaseDirectory, _path);
 
             try
             {
-                if (!File.Exists(_path))
+                if (!File.Exists(fullPath))
                 {
-                    logger.Log($"Configuration file not found: {_path}. Using defaults.", LogLevel.Warning);
-                    MessageBox.Show($"Configuration file '{_path}' not found. Please create the file with the necessary settings. Using defaults.", "Configuration Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    logger.Log($"Configuration file not found: {fullPath}. Using defaults.", LogLevel.Warning);
+                    if (showDialogs)
+                    {
+                        string message = string.Format(_localization.GetContent("ConfigNotFoundErrorMessage", _localization.GetCurrentLanguage()), fullPath);
+                        MessageBox.Show(
+                            message,
+                            _localization.GetContent("CustomTextError", _localization.GetCurrentLanguage()),
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
                     return config;
                 }
 
-                var json = File.ReadAllText(_path);
+                var json = File.ReadAllText(fullPath);
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -44,23 +54,43 @@ namespace FileConsistencyManager.Config
 
                 if (deserialized == null)
                 {
-                    logger.Log($"Failed to deserialize configuration: {_path}. Using defaults.", LogLevel.Warning);
-                    // Insert Method to open configuration Forms
-                    logger.Log("Configuration loading failed.", LogLevel.Error);
-                    CustomMessageBox.Show($"Failed to deserialize configuration file '{_path}'. Please check the file format. Using defaults",
-                        "Error",
-                        CustomMessageBoxTypes.CustomMessageBoxButtons.OK,
-                        CustomMessageBoxTypes.CustomMessageBoxIcon.Error,
-                        _localization);
-                    //MessageBox.Show($"Failed to deserialize configuration file '{_path}'. Please check the file format. Using defaults.", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    logger.Log($"Failed to deserialize configuration: {fullPath}. Using defaults.", LogLevel.Warning);
+                    if (showDialogs)
+                    {
+                        string message = string.Format(_localization.GetContent("ConfigLoadDeserializeMessage", _localization.GetCurrentLanguage()), fullPath);
+                        MessageBox.Show(
+                            message,
+                            _localization.GetContent("CustomTextError", _localization.GetCurrentLanguage()),
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                     return config;
                 }
 
                 // Fill missing sub-objects with safe defaults to avoid null refs elsewhere
+                var defaultConfig = new AppConfig
+                {
+                    Connection = new DatabaseConfig { Server = string.Empty, Database = string.Empty, UserId = string.Empty, Password = string.Empty },
+                    Path = new PathConfig { ArchivePath = string.Empty },
+                    Language = new LanguageConfig { Current = "en" }
+                };
+
                 if (deserialized.Connection == null)
-                    deserialized.Connection = config.Connection;
+                    deserialized.Connection = defaultConfig.Connection;
                 if (deserialized.Path == null)
-                    deserialized.Path = config.Path;
+                    deserialized.Path = defaultConfig.Path;
+                if (deserialized.Language == null)
+                    deserialized.Language = defaultConfig.Language;
+
+                // Try to decrypt password stored in configuration. If decryption fails, assume it's plain text and keep it.
+                if (!string.IsNullOrEmpty(deserialized.Connection.Password))
+                {
+                    var decrypted = DataProtector.Unprotect(deserialized.Connection.Password);
+                    if (!string.IsNullOrEmpty(decrypted))
+                    {
+                        deserialized.Connection.Password = decrypted;
+                    }
+                    // else leave as-is (likely plain text or invalid protected string)
+                }
 
                 return deserialized;
             }
@@ -68,63 +98,85 @@ namespace FileConsistencyManager.Config
             {
                 logger.LogException(jex);
                 logger.Log($"Error parsing configuration file '{_path}'. Using defaults.", LogLevel.Warning);
-                CustomMessageBox.Show($"Error parsing configuration file '{_path}'. Please check the file format. Using defaults.",
-                        "Error",
-                        CustomMessageBoxTypes.CustomMessageBoxButtons.OK,
-                        CustomMessageBoxTypes.CustomMessageBoxIcon.Error,
-                        _localization);
-                MessageBox.Show($"Error parsing configuration file '{_path}'. Please check the file format. Using defaults.", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);  //check
+                if (showDialogs)
+                {
+                    string message = string.Format(_localization.GetContent("ConfigParseErrorMessage", _localization.GetCurrentLanguage()), fullPath);
+                    MessageBox.Show(
+                        message,
+                        _localization.GetContent("CustomTextError", _localization.GetCurrentLanguage()),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 return config;
             }
             catch (Exception ex)
             {
                 logger.LogException(ex);
                 logger.Log($"Unexpected error loading configuration '{_path}'. Using defaults.", LogLevel.Error);
-                CustomMessageBox.Show($"Unexpected error loading configuration '{_path}'. Please check the file and try again. Using defaults.",
-                        "Error",
-                        CustomMessageBoxTypes.CustomMessageBoxButtons.OK,
-                        CustomMessageBoxTypes.CustomMessageBoxIcon.Error,
-                        _localization);
-                //MessageBox.Show($"Unexpected error loading configuration '{_path}'. Please check the file and try again. Using defaults.", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);  //check
+                if (showDialogs)
+                {
+                    string message = string.Format(_localization.GetContent("ConfigUnexpectedErrorMessage", _localization.GetCurrentLanguage()), fullPath);
+                    MessageBox.Show(
+                        message,
+                        _localization.GetContent("CustomTextError", _localization.GetCurrentLanguage()),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 return config;
             }
         }
 
-        private static AppConfig CreateDefaultConfig()
-        {
-            return new AppConfig
-            {
-                Connection = new DatabaseConfig
-                {
-                    Server = string.Empty,
-                    Database = string.Empty,
-                    UserId = string.Empty,
-                    Password = string.Empty
-                },
-                Path = new PathConfig
-                {
-                    ArchivePath = string.Empty
-                }
-            };
-        }
-
-        public void SetNewConfig(AppConfig config, Logger logger)
+        public void SetNewConfig(AppConfig config, Logger logger, bool showDialogs = true)
         {
             // write into the config file with the new config
             try
             {
-                var options = new JsonSerializerOptions
+                // ensure sub-objects
+                if (config.Connection == null) config.Connection = new DatabaseConfig();
+                if (config.Path == null) config.Path = new PathConfig();
+                if (config.Language == null) config.Language = new LanguageConfig { Current = "en" };
+
+                // Encrypt password before writing (do not mutate original config)
+                var toWrite = new AppConfig
                 {
-                    WriteIndented = true
+                    Connection = new DatabaseConfig
+                    {
+                        Server = config.Connection.Server,
+                        Database = config.Connection.Database,
+                        UserId = config.Connection.UserId,
+                        Password = string.IsNullOrEmpty(config.Connection.Password) ? string.Empty : DataProtector.Protect(config.Connection.Password)
+                    },
+                    Path = new PathConfig { ArchivePath = config.Path.ArchivePath },
+                    Language = new LanguageConfig { Current = config.Language.Current }
                 };
-                var json = JsonSerializer.Serialize(config, options);
-                File.WriteAllText(_path, json);
-                MessageBox.Show($"Configuration saved successfully to '{_path}'.", "Configuration Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                var fullPath = Path.Combine(AppContext.BaseDirectory, _path);
+                var dir = Path.GetDirectoryName(fullPath);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                var json = JsonSerializer.Serialize(toWrite, options);
+                File.WriteAllText(fullPath, json);
+
+                if (showDialogs)
+                {
+                    string message = string.Format(_localization.GetContent("ConfigSuccessfulSaveMessage", _localization.GetCurrentLanguage()), fullPath);
+                    MessageBox.Show(
+                        message,
+                        _localization.GetContent("CustomTextInformation", _localization.GetCurrentLanguage()),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
                 logger.Log($"Error writing configuration to file '{_path}': {ex.Message}", LogLevel.Error);
-                MessageBox.Show($"Error writing configuration to file '{_path}'. Please check the file permissions and try again.", "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error); return;
+                if (showDialogs)
+                {
+                    string message = string.Format(_localization.GetContent("ConfigSaveErrorMessage", _localization.GetCurrentLanguage()), _path);
+                    MessageBox.Show(
+                        message,
+                        _localization.GetContent("CustomTextError", _localization.GetCurrentLanguage()),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return;
             }
         }
     }

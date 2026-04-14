@@ -15,6 +15,11 @@ namespace FileConsistencyManager.Logging
             _currentLogLevel = logLevel;
         }
 
+        public string GetLogFilePath()
+        {
+            return _logFilePath;
+        }
+
         public void Log(string message, LogLevel level)
         {
             if (level < _currentLogLevel)

@@ -16,40 +16,35 @@ namespace FileConsistencyManager
         private AppConfig _config;
         private ConfigLoader _configLoader;
         private Logger _logger;
-        private Localize _localization = new Localize(currentLanguage: "en");
+        private Localize _localization;
         private List<ComparisonResult> _allResults = new List<ComparisonResult>();
 
-        public Main()
+        public Main(AppConfig appConfig, Logger logger, ConfigLoader configLoader, Localize localization)
         {
-            SetupLogger();
-            
-            // Initialize ConfigLoader with localization
-            _configLoader = new ConfigLoader("config.json", _localization);
+            // Set localization early so SetupUI uses correct language
+            _localization = localization ?? new Localize("en");
 
-            // load data from json config file
-            _config = _configLoader.Load(_logger);
+            // Ensure logger exists
+            SetupLogger();
+            _logger = logger ?? _logger;
+
+            // ConfigLoader (may show messages using localization)
+            _configLoader = configLoader ?? new ConfigLoader("config.json", _localization);
+
+            // Load config (ConfigLoader will handle decryption)
+            _config = appConfig ?? _configLoader.Load(_logger);
 
             // Initializations & Setup for Combobox and GridView
             InitializeComponent();
             SetupUI();
 
-            if (_config == null)
-            {
-                // Insert Method to open configuration Forms
-                _logger.Log("Configuration loading failed.", LogLevel.Error);
-                CustomMessageBox.Show("Configuration loading failed. Please check the logs for details.", 
-                    "Error", 
-                    CustomMessageBoxTypes.CustomMessageBoxButtons.OK, 
-                    CustomMessageBoxTypes.CustomMessageBoxIcon.Error, 
-                    _localization);
+            lblConnectionLabel.Text = "Connected to: " + (_config.Connection?.Server ?? string.Empty) + "\\" + (_config.Connection?.Database ?? string.Empty);
+        }
 
-                //MessageBox.Show("Configuration loading failed. Please check the logs for details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-                return;
-            }
-
-            // Temporary Testing
-            //TestDatabaseConnection();
+        private void OpenSettingsForm()
+        {
+            Settings settingsForm = new Settings(_config, _logger, _configLoader, _localization, isMainOpen: true);
+            settingsForm.ShowDialog();
         }
 
         private string GetConnectionString()
@@ -66,7 +61,7 @@ namespace FileConsistencyManager
         private void SetupLogger()
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string logFolder = Path.Combine(basePath, "Logs");
+            string logFolder = Path.Combine(basePath, "_Logs");
             string logFilePath = Path.Combine(logFolder, "_log.txt");
             if (!Directory.Exists(logFolder))
                 Directory.CreateDirectory(logFolder);
@@ -129,7 +124,7 @@ namespace FileConsistencyManager
             cmbLanguage.Items.Add(_localization.GetContent("Culture", "de"));
 
             cmbLanguage.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbLanguage.SelectedIndex = 0;
+            cmbLanguage.SelectedIndex = _config.Language.Current == "de" ? 1 : 0;
         }
 
         private void SetupGrid()
@@ -179,13 +174,9 @@ namespace FileConsistencyManager
         {
             try
             {
-                //if() 
-
                 string lang = _localization.GetCurrentLanguage();
 
-                btnDelete.Enabled = false;
-                btnArchive.Enabled = false;
-                btnIgnore.Enabled = false;
+                UIEnabled(false);
 
                 SetStatus(_localization.GetContent("ProgressBarAnalyseStartMessage", lang));
                 pbProgress.Value = 0;
@@ -205,14 +196,18 @@ namespace FileConsistencyManager
                 lblMissingCount.Text = missingFiles.ToString();
                 lblOrphanCount.Text = orphanFiles.ToString();
 
-                btnDelete.Enabled = true;
-                btnArchive.Enabled = true;
-                btnIgnore.Enabled = true;
+                UIEnabled(true);
             }
             catch (Exception ex)
             {
+                UIEnabled(true);
+
                 _logger.LogException(ex);
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(
+                    ex.Message,
+                    _localization.GetContent("CustomTextError", _localization.GetCurrentLanguage()),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 ClearStatus();
             }
         }
@@ -243,20 +238,27 @@ namespace FileConsistencyManager
 
         private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // add a combobox
             if (cmbLanguage.SelectedItem.ToString() == "English")
             {
+                var culture = new System.Globalization.CultureInfo("en-US");
+                System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
+                System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+
                 _localization.SetCurrentLanguage("en");
                 ApplyLanguage(_localization.en);
             }
             else
             {
+                var culture = new System.Globalization.CultureInfo("de-DE");
+                System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
+                System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+
                 _localization.SetCurrentLanguage("de");
                 ApplyLanguage(_localization.de);
             }
 
             SetupComboboxOptions();
-            if(dgvResults.DataSource != null) RefreshLanguageDataGridView();
+            if (dgvResults.DataSource != null) RefreshLanguageDataGridView();
         }
 
         #endregion
@@ -285,7 +287,8 @@ namespace FileConsistencyManager
             else if (row.Type == IssueType.Types.OrphanFile)
             {
                 dgvResults.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
-            }else if(row.Type == IssueType.Types.Exists)
+            }
+            else if (row.Type == IssueType.Types.Exists)
             {
                 dgvResults.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen;
             }
@@ -394,7 +397,7 @@ namespace FileConsistencyManager
             UpdateProgress(50, showText: false);
 
             string databaseName = _config.Connection.Server + "\\" + _config.Connection.Database;
-            List<ComparisonResult> results = manager.RunCheck(databaseName, logText);
+            List<ComparisonResult> results = manager.RunCheck(databaseName, _localization, logText);
 
             UpdateProgress(100);
 
@@ -414,12 +417,11 @@ namespace FileConsistencyManager
             // if no Row was selected
             if (selectedItems.Count == 0)
             {
-                CustomMessageBox.Show(_localization.GetContent("AfterItemCountMessage", lang),
-                    "",
-                    CustomMessageBoxTypes.CustomMessageBoxButtons.OK,
-                    CustomMessageBoxTypes.CustomMessageBoxIcon.Warning,
-                    _localization);
-                //MessageBox.Show();
+                MessageBox.Show(
+                    _localization.GetContent("AfterItemCountMessage", lang),
+                    _localization.GetContent("CustomTextInformation", lang),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
                 return;
             }
 
@@ -443,23 +445,19 @@ namespace FileConsistencyManager
             string message;
             if (selectedItems.Count > 1)
             {
-                if (_localization.GetCurrentLanguage() == "de")
-                    message = _localization.GetContent("ConfirmMultipleMessageDE", "de");
-                else
-                    message = _localization.GetContent("ConfirmMultipleMessageEN", "en");
+                message = _localization.GetContent("ConfirmMultipleMessage", lang);
             }
             else
                 message = _localization.GetContent("ConfirmMessage", lang);
             message = string.Format(message, actionText, selectedItems.Count);
 
-            CustomMessageBoxTypes.CustomDialogResult confirm = CustomMessageBox.Show(
+            DialogResult confirm = MessageBox.Show(
                 message,
-                "",
-                CustomMessageBoxTypes.CustomMessageBoxButtons.OKCancel,
-                CustomMessageBoxTypes.CustomMessageBoxIcon.Warning,
-                _localization);
+                _localization.GetContent("CustomTextWarning", lang),
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Warning);
 
-            if (confirm != CustomMessageBoxTypes.CustomDialogResult.OK)
+            if (confirm != DialogResult.OK)
                 return;
 
             ActionService actionService = new ActionService(_logger);
@@ -491,7 +489,11 @@ namespace FileConsistencyManager
                     break;
             }
 
-            MessageBox.Show(_localization.GetContent("ActionCompleteMessage", lang), "test", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                _localization.GetContent("ActionCompleteMessage", lang),
+                _localization.GetContent("CustomTextInformation", lang),
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
 
             // reload the DataGrid
             btnStart_Click(null, null);
@@ -520,7 +522,8 @@ namespace FileConsistencyManager
                 filtered = _allResults
                     .Where(r => r.Type == IssueType.Types.OrphanFile)
                     .ToList();
-            } else if(selected == _localization.GetContent("FilterExistsTitle", lang))
+            }
+            else if (selected == _localization.GetContent("FilterExistsTitle", lang))
             {
                 filtered = _allResults
                     .Where(r => r.Type == IssueType.Types.Exists)
@@ -556,6 +559,16 @@ namespace FileConsistencyManager
             SelectionChangedEvent();
         }
 
+        private void UIEnabled(bool enabled)
+        {
+            btnStart.Enabled = enabled;
+            btnDelete.Enabled = enabled;
+            btnArchive.Enabled = enabled;
+            btnIgnore.Enabled = enabled;
+            cmbFilter.Enabled = enabled;
+            cmbLanguage.Enabled = enabled;
+        }
+
         #endregion
 
         #region Tests
@@ -584,5 +597,10 @@ namespace FileConsistencyManager
         }
 
         #endregion
+
+        private void btnSettings_Click(object sender, EventArgs e)
+        {
+            OpenSettingsForm();
+        }
     }
 }

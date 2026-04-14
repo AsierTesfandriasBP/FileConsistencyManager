@@ -5,6 +5,7 @@ using FileConsistencyManager.Models;
 using FileConsistencyManager.Services;
 using FileConsistencyManager.DataAccess;
 using FileConsistencyManager.Logging;
+using FileConsistencyManager.Localization;
 
 namespace FileConsistencyManager.Business
 {
@@ -27,7 +28,7 @@ namespace FileConsistencyManager.Business
             _logger = logger;
         }
 
-        public List<ComparisonResult> RunCheck(string databaseName, bool logText=true)
+        public List<ComparisonResult> RunCheck(string databaseName, Localize lang, bool logText=true)
         {
             try
             {
