@@ -32,7 +32,6 @@
             btnStart = new Button();
             cmbFilter = new ComboBox();
             lblCmbFilterTitle = new Label();
-            btnIgnore = new Button();
             btnArchive = new Button();
             btnDelete = new Button();
             pbProgress = new ProgressBar();
@@ -44,10 +43,11 @@
             lblMissingCount = new Label();
             lblOrphanCount = new Label();
             dgvResults = new DataGridView();
-            lblStatusCount = new Label();
             tip = new ToolTip(components);
             statusStrip1 = new StatusStrip();
             lblConnectionLabel = new ToolStripStatusLabel();
+            lblEntriesFound = new ToolStripStatusLabel();
+            lblEntriesFoundCount = new ToolStripStatusLabel();
             btnSettings = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvResults).BeginInit();
             statusStrip1.SuspendLayout();
@@ -55,9 +55,10 @@
             // 
             // btnStart
             // 
-            btnStart.Location = new Point(16, 637);
+            btnStart.Location = new Point(12, 378);
+            btnStart.Margin = new Padding(2);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(156, 38);
+            btnStart.Size = new Size(109, 29);
             btnStart.TabIndex = 0;
             btnStart.Text = "Scan starten";
             btnStart.UseVisualStyleBackColor = true;
@@ -66,36 +67,29 @@
             // cmbFilter
             // 
             cmbFilter.FormattingEnabled = true;
-            cmbFilter.Location = new Point(956, 637);
+            cmbFilter.Location = new Point(669, 382);
+            cmbFilter.Margin = new Padding(2);
             cmbFilter.Name = "cmbFilter";
-            cmbFilter.Size = new Size(251, 33);
+            cmbFilter.Size = new Size(177, 23);
             cmbFilter.TabIndex = 1;
             cmbFilter.SelectedIndexChanged += cmbFilter_SelectedIndexChanged;
             // 
             // lblCmbFilterTitle
             // 
             lblCmbFilterTitle.AutoSize = true;
-            lblCmbFilterTitle.Location = new Point(956, 608);
+            lblCmbFilterTitle.Location = new Point(669, 365);
+            lblCmbFilterTitle.Margin = new Padding(2, 0, 2, 0);
             lblCmbFilterTitle.Name = "lblCmbFilterTitle";
-            lblCmbFilterTitle.Size = new Size(54, 25);
+            lblCmbFilterTitle.Size = new Size(36, 15);
             lblCmbFilterTitle.TabIndex = 3;
             lblCmbFilterTitle.Text = "Filter:";
             // 
-            // btnIgnore
-            // 
-            btnIgnore.Location = new Point(16, 542);
-            btnIgnore.Name = "btnIgnore";
-            btnIgnore.Size = new Size(156, 48);
-            btnIgnore.TabIndex = 4;
-            btnIgnore.Text = "Ignorieren";
-            btnIgnore.UseVisualStyleBackColor = true;
-            btnIgnore.Click += btnIgnore_Click;
-            // 
             // btnArchive
             // 
-            btnArchive.Location = new Point(177, 542);
+            btnArchive.Location = new Point(492, 325);
+            btnArchive.Margin = new Padding(2);
             btnArchive.Name = "btnArchive";
-            btnArchive.Size = new Size(156, 48);
+            btnArchive.Size = new Size(174, 29);
             btnArchive.TabIndex = 6;
             btnArchive.Text = "Archivieren";
             btnArchive.UseVisualStyleBackColor = true;
@@ -103,9 +97,10 @@
             // 
             // btnDelete
             // 
-            btnDelete.Location = new Point(957, 542);
+            btnDelete.Location = new Point(670, 325);
+            btnDelete.Margin = new Padding(2);
             btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(251, 48);
+            btnDelete.Size = new Size(176, 29);
             btnDelete.TabIndex = 7;
             btnDelete.Text = "Löschen [Permanent]";
             btnDelete.UseVisualStyleBackColor = true;
@@ -113,116 +108,129 @@
             // 
             // pbProgress
             // 
-            pbProgress.Location = new Point(177, 638);
+            pbProgress.Location = new Point(124, 383);
+            pbProgress.Margin = new Padding(2);
             pbProgress.Name = "pbProgress";
-            pbProgress.Size = new Size(773, 37);
+            pbProgress.Size = new Size(541, 22);
             pbProgress.TabIndex = 8;
             // 
             // cmbLanguage
             // 
             cmbLanguage.FormattingEnabled = true;
-            cmbLanguage.Location = new Point(961, 37);
+            cmbLanguage.Location = new Point(673, 22);
+            cmbLanguage.Margin = new Padding(2);
             cmbLanguage.Name = "cmbLanguage";
-            cmbLanguage.Size = new Size(245, 33);
+            cmbLanguage.Size = new Size(173, 23);
             cmbLanguage.TabIndex = 9;
             cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
             // 
             // lblCmbLanguageTitle
             // 
             lblCmbLanguageTitle.AutoSize = true;
-            lblCmbLanguageTitle.Location = new Point(961, 8);
+            lblCmbLanguageTitle.Location = new Point(673, 5);
+            lblCmbLanguageTitle.Margin = new Padding(2, 0, 2, 0);
             lblCmbLanguageTitle.Name = "lblCmbLanguageTitle";
-            lblCmbLanguageTitle.Size = new Size(79, 25);
+            lblCmbLanguageTitle.Size = new Size(52, 15);
             lblCmbLanguageTitle.TabIndex = 10;
             lblCmbLanguageTitle.Text = "Sprache:";
             // 
             // lblStatus
             // 
             lblStatus.AutoSize = true;
-            lblStatus.Location = new Point(207, 610);
+            lblStatus.Location = new Point(125, 366);
+            lblStatus.Margin = new Padding(2, 0, 2, 0);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(0, 25);
+            lblStatus.Size = new Size(0, 15);
             lblStatus.TabIndex = 11;
             // 
             // lblMissing
             // 
             lblMissing.AutoSize = true;
-            lblMissing.Location = new Point(61, 15);
+            lblMissing.Location = new Point(43, 9);
+            lblMissing.Margin = new Padding(2, 0, 2, 0);
             lblMissing.Name = "lblMissing";
-            lblMissing.Size = new Size(144, 25);
+            lblMissing.Size = new Size(94, 15);
             lblMissing.TabIndex = 12;
             lblMissing.Text = "Files in Database";
             // 
             // lblOrphan
             // 
             lblOrphan.AutoSize = true;
-            lblOrphan.Location = new Point(61, 47);
+            lblOrphan.Location = new Point(43, 28);
+            lblOrphan.Margin = new Padding(2, 0, 2, 0);
             lblOrphan.Name = "lblOrphan";
-            lblOrphan.Size = new Size(132, 25);
+            lblOrphan.Size = new Size(88, 15);
             lblOrphan.TabIndex = 13;
             lblOrphan.Text = "Files in Filepath";
             // 
             // lblMissingCount
             // 
             lblMissingCount.AutoSize = true;
-            lblMissingCount.Location = new Point(17, 15);
+            lblMissingCount.Location = new Point(12, 9);
+            lblMissingCount.Margin = new Padding(2, 0, 2, 0);
             lblMissingCount.Name = "lblMissingCount";
-            lblMissingCount.Size = new Size(19, 25);
+            lblMissingCount.Size = new Size(12, 15);
             lblMissingCount.TabIndex = 14;
             lblMissingCount.Text = "/";
             // 
             // lblOrphanCount
             // 
             lblOrphanCount.AutoSize = true;
-            lblOrphanCount.Location = new Point(17, 47);
+            lblOrphanCount.Location = new Point(12, 28);
+            lblOrphanCount.Margin = new Padding(2, 0, 2, 0);
             lblOrphanCount.Name = "lblOrphanCount";
-            lblOrphanCount.Size = new Size(19, 25);
+            lblOrphanCount.Size = new Size(12, 15);
             lblOrphanCount.TabIndex = 15;
             lblOrphanCount.Text = "/";
             // 
             // dgvResults
             // 
             dgvResults.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvResults.Location = new Point(17, 83);
-            dgvResults.Margin = new Padding(4, 5, 4, 5);
+            dgvResults.Location = new Point(12, 50);
             dgvResults.Name = "dgvResults";
             dgvResults.RowHeadersWidth = 62;
-            dgvResults.Size = new Size(1190, 450);
+            dgvResults.Size = new Size(833, 270);
             dgvResults.TabIndex = 16;
             dgvResults.CellFormatting += dgvResults_CellFormatting;
             dgvResults.SelectionChanged += dgvResults_SelectionChanged;
             // 
-            // lblStatusCount
-            // 
-            lblStatusCount.AutoSize = true;
-            lblStatusCount.Location = new Point(179, 610);
-            lblStatusCount.Margin = new Padding(4, 0, 4, 0);
-            lblStatusCount.Name = "lblStatusCount";
-            lblStatusCount.Size = new Size(0, 25);
-            lblStatusCount.TabIndex = 17;
-            // 
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(24, 24);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { lblConnectionLabel });
-            statusStrip1.Location = new Point(0, 705);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblConnectionLabel, lblEntriesFound, lblEntriesFoundCount });
+            statusStrip1.Location = new Point(0, 420);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Padding = new Padding(1, 0, 20, 0);
-            statusStrip1.Size = new Size(1220, 32);
+            statusStrip1.Size = new Size(854, 22);
             statusStrip1.TabIndex = 18;
             statusStrip1.Text = "statusStrip1";
             // 
             // lblConnectionLabel
             // 
             lblConnectionLabel.Name = "lblConnectionLabel";
-            lblConnectionLabel.Size = new Size(106, 25);
-            lblConnectionLabel.Text = "Connected: ";
+            lblConnectionLabel.Size = new Size(695, 17);
+            lblConnectionLabel.Spring = true;
+            lblConnectionLabel.Text = "Connected to: MSSQL-Server Datenbank";
+            lblConnectionLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // lblEntriesFound
+            // 
+            lblEntriesFound.Name = "lblEntriesFound";
+            lblEntriesFound.Size = new Size(132, 17);
+            lblEntriesFound.Text = "Entries in DataGridView:";
+            lblEntriesFound.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // lblEntriesFoundCount
+            // 
+            lblEntriesFoundCount.Name = "lblEntriesFoundCount";
+            lblEntriesFoundCount.Size = new Size(12, 17);
+            lblEntriesFoundCount.Text = "/";
             // 
             // btnSettings
             // 
-            btnSettings.Location = new Point(649, 12);
+            btnSettings.Location = new Point(11, 325);
+            btnSettings.Margin = new Padding(2);
             btnSettings.Name = "btnSettings";
-            btnSettings.Size = new Size(171, 41);
+            btnSettings.Size = new Size(156, 29);
             btnSettings.TabIndex = 19;
             btnSettings.Text = "Settings";
             btnSettings.UseVisualStyleBackColor = true;
@@ -230,12 +238,11 @@
             // 
             // Main
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1220, 737);
+            ClientSize = new Size(854, 442);
             Controls.Add(btnSettings);
             Controls.Add(statusStrip1);
-            Controls.Add(lblStatusCount);
             Controls.Add(dgvResults);
             Controls.Add(lblOrphanCount);
             Controls.Add(lblMissingCount);
@@ -247,12 +254,12 @@
             Controls.Add(pbProgress);
             Controls.Add(btnDelete);
             Controls.Add(btnArchive);
-            Controls.Add(btnIgnore);
             Controls.Add(lblCmbFilterTitle);
             Controls.Add(cmbFilter);
             Controls.Add(btnStart);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             HelpButton = true;
+            Margin = new Padding(2);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Main";
@@ -270,7 +277,6 @@
         private Button btnStart;
         private ComboBox cmbFilter;
         private Label lblCmbFilterTitle;
-        private Button btnIgnore;
         private Button button2;
         private Button btnArchive;
         private Button btnDelete;
@@ -283,10 +289,11 @@
         private Label lblMissingCount;
         private Label lblOrphanCount;
         private DataGridView dgvResults;
-        private Label lblStatusCount;
         private ToolTip tip;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel lblConnectionLabel;
         private Button btnSettings;
+        private ToolStripStatusLabel lblEntriesFound;
+        private ToolStripStatusLabel lblEntriesFoundCount;
     }
 }

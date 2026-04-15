@@ -9,64 +9,43 @@ using System.Text;
 
 namespace FileConsistencyManager
 {
-    internal partial class Main : Form
+    internal partial class Main : Form, IUiUpdater
     {
         #region Initialization and Setup
 
         private AppConfig _config;
-        private ConfigLoader _configLoader;
+        private ConfigManager _configManager;
         private Logger _logger;
         private Localize _localization;
         private List<ComparisonResult> _allResults = new List<ComparisonResult>();
+        private string lang;
 
-        public Main(AppConfig appConfig, Logger logger, ConfigLoader configLoader, Localize localization)
+        public Main(AppConfig appConfig, Logger logger, ConfigManager configManager, Localize localization)
         {
             // Set localization early so SetupUI uses correct language
-            _localization = localization ?? new Localize("en");
+            _localization = localization;
+            lang = _localization.GetCurrentLanguage();
 
             // Ensure logger exists
-            SetupLogger();
-            _logger = logger ?? _logger;
+            _logger = logger;
 
             // ConfigLoader (may show messages using localization)
-            _configLoader = configLoader ?? new ConfigLoader("config.json", _localization);
+            _configManager = configManager;
 
             // Load config (ConfigLoader will handle decryption)
-            _config = appConfig ?? _configLoader.Load(_logger);
+            _config = appConfig;
 
             // Initializations & Setup for Combobox and GridView
             InitializeComponent();
             SetupUI();
 
-            lblConnectionLabel.Text = "Connected to: " + (_config.Connection?.Server ?? string.Empty) + "\\" + (_config.Connection?.Database ?? string.Empty);
+            lblConnectionLabel.Text = string.Format(_localization.GetContent("ConnectedToLabel", lang), _configManager.GetDatabaseName(_config));
         }
 
         private void OpenSettingsForm()
         {
-            Settings settingsForm = new Settings(_config, _logger, _configLoader, _localization, isMainOpen: true);
+            Settings settingsForm = new Settings(_config, _logger, _configManager, _localization, isMainOpen: true);
             settingsForm.ShowDialog();
-        }
-
-        private string GetConnectionString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Server=").Append($@"{_config.Connection.Server}")
-                .Append(";Database=").Append(_config.Connection.Database)
-                .Append(";User Id=").Append(_config.Connection.UserId)
-                .Append(";Password=").Append(_config.Connection.Password)
-                .Append(";TrustServerCertificate=True;");
-            return sb.ToString();
-        }
-
-        private void SetupLogger()
-        {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string logFolder = Path.Combine(basePath, "_Logs");
-            string logFilePath = Path.Combine(logFolder, "_log.txt");
-            if (!Directory.Exists(logFolder))
-                Directory.CreateDirectory(logFolder);
-
-            _logger = new Logger(logFilePath, LogLevel.Info);
         }
 
         private void SetupUI()
@@ -75,7 +54,7 @@ namespace FileConsistencyManager
             SetupButtons();
             SetupComboboxOptions();
             SetupComboboxLanguage();
-            ApplyLanguage(_localization.GetCurrentLanguageDictionary());
+            ApplyLanguage(_localization.GetCurrentLanguage());
         }
 
         private void SetupButtons()
@@ -83,24 +62,19 @@ namespace FileConsistencyManager
             // Default Settings
             btnDelete.Enabled = false;
             btnArchive.Enabled = false;
-            btnIgnore.Enabled = false;
 
             // UX improvements
             btnDelete.FlatStyle = FlatStyle.Flat;
             btnArchive.FlatStyle = FlatStyle.Flat;
-            btnIgnore.FlatStyle = FlatStyle.Flat;
+            btnSettings.FlatStyle = FlatStyle.Flat;
 
             // Tooltips
-            string lang = _localization.GetCurrentLanguage();
             tip.SetToolTip(btnDelete, _localization.GetContent("DeleteButtonToolTip", lang));
             tip.SetToolTip(btnArchive, _localization.GetContent("ArchiveButtonToolTip", lang));
-            tip.SetToolTip(btnIgnore, _localization.GetContent("IgnoreButtonToolTip", lang));
         }
 
         private void SetupComboboxOptions()
         {
-            string lang = _localization.GetCurrentLanguage();
-
             int currentIndex = cmbFilter.SelectedIndex != -1 ? cmbFilter.SelectedIndex : 0;
 
             // delete all existing items to prevent duplicates when changing language
@@ -118,8 +92,6 @@ namespace FileConsistencyManager
 
         private void SetupComboboxLanguage()
         {
-            string lang = _localization.GetCurrentLanguage();
-
             cmbLanguage.Items.Add(_localization.GetContent("Culture", "en"));
             cmbLanguage.Items.Add(_localization.GetContent("Culture", "de"));
 
@@ -129,8 +101,6 @@ namespace FileConsistencyManager
 
         private void SetupGrid()
         {
-            string lang = _localization.GetCurrentLanguage();
-
             // Default Settings
             dgvResults.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvResults.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -174,11 +144,9 @@ namespace FileConsistencyManager
         {
             try
             {
-                string lang = _localization.GetCurrentLanguage();
-
                 UIEnabled(false);
 
-                SetStatus(_localization.GetContent("ProgressBarAnalyseStartMessage", lang));
+                ((IUiUpdater)this).SetStatus(_localization.GetContent("ProgressBarAnalyseStartMessage", lang));
                 pbProgress.Value = 0;
 
                 bool logText = sender != null ? true : false;
@@ -217,14 +185,14 @@ namespace FileConsistencyManager
             ExecuteAction(ActionType.Delete);
         }
 
-        private void btnIgnore_Click(object sender, EventArgs e)
-        {
-            ExecuteAction(ActionType.Ignore);
-        }
-
         private void btnArchive_Click(object sender, EventArgs e)
         {
             ExecuteAction(ActionType.Archive);
+        }
+
+        private void btnSettings_Click(object sender, EventArgs e)
+        {
+            OpenSettingsForm();
         }
 
         #endregion
@@ -245,7 +213,8 @@ namespace FileConsistencyManager
                 System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
 
                 _localization.SetCurrentLanguage("en");
-                ApplyLanguage(_localization.en);
+                lang = _localization.GetCurrentLanguage();
+                ApplyLanguage(forcedLang: lang);
             }
             else
             {
@@ -254,7 +223,8 @@ namespace FileConsistencyManager
                 System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
 
                 _localization.SetCurrentLanguage("de");
-                ApplyLanguage(_localization.de);
+                lang = _localization.GetCurrentLanguage();
+                ApplyLanguage(forcedLang: lang);
             }
 
             SetupComboboxOptions();
@@ -301,19 +271,16 @@ namespace FileConsistencyManager
 
         private void SelectionChangedEvent()
         {
-            string lang = _localization.GetCurrentLanguage();
             int selectedCount = dgvResults.SelectedRows.Count;
             bool hasSelection = dgvResults.SelectedRows.Count > 0;
 
             btnDelete.Enabled = hasSelection;
             btnArchive.Enabled = hasSelection;
-            btnIgnore.Enabled = hasSelection;
 
             if (hasSelection)
             {
                 btnDelete.Text = _localization.GetContent("Delete", lang) + " (" + selectedCount + ") ";
                 btnArchive.Text = _localization.GetContent("Archive", lang) + " (" + selectedCount + ") ";
-                btnIgnore.Text = _localization.GetContent("Ignore", lang) + " (" + selectedCount + ") ";
                 return;
             }
         }
@@ -331,17 +298,22 @@ namespace FileConsistencyManager
 
         #region Status Methods
 
-        private void SetStatus(string message, string resultsCount = "")
+        void IUiUpdater.SetStatus(string message, string resultsCount = "")
         {
-            if (lblStatus.InvokeRequired)
+            // ToolStripStatusLabel is not a Control and therefore does not expose Invoke/InvokeRequired.
+            // Use the Form (this) which is a Control to marshal updates to the UI thread.
+            if (this.InvokeRequired)
             {
-                lblStatus.Invoke(new Action(() => lblStatus.Text = message));
-                if (resultsCount != string.Empty) lblStatusCount.Invoke(new Action(() => lblStatusCount.Text = resultsCount));
+                this.Invoke(new Action(() =>
+                {
+                    lblStatus.Text = message;
+                    if (!string.IsNullOrEmpty(resultsCount)) lblEntriesFoundCount.Text = resultsCount;
+                }));
             }
             else
             {
                 lblStatus.Text = message;
-                if (resultsCount != string.Empty) lblStatusCount.Text = resultsCount;
+                if (!string.IsNullOrEmpty(resultsCount)) lblEntriesFoundCount.Text = resultsCount;
             }
         }
 
@@ -351,22 +323,20 @@ namespace FileConsistencyManager
             pbProgress.Value = 0;
         }
 
-        private void UpdateProgress(int value, bool showText = true)
+        void IUiUpdater.UpdateProgress(int value, bool showText = true)
         {
-            string lang = _localization.GetCurrentLanguage();
-
             if (pbProgress.InvokeRequired)
             {
                 pbProgress.Invoke(new Action(() =>
                 {
                     pbProgress.Value = value;
-                    if (showText) SetStatus(string.Format(_localization.GetContent("ProgressBarAnalyseStatusMessage", lang), value));
+                    if (showText) ((IUiUpdater)this).SetStatus(string.Format(_localization.GetContent("ProgressBarAnalyseStatusMessage", lang), value));
                 }));
             }
             else
             {
                 pbProgress.Value = value;
-                if (showText) SetStatus(string.Format(_localization.GetContent("ProgressBarAnalyseStatusMessage", lang), value));
+                if (showText) ((IUiUpdater)this).SetStatus(string.Format(_localization.GetContent("ProgressBarAnalyseStatusMessage", lang), value));
             }
         }
 
@@ -376,13 +346,11 @@ namespace FileConsistencyManager
 
         private void ExecuteRunScanWithProgress(bool logText)
         {
-            string lang = _localization.GetCurrentLanguage();
-
             // Used thread-safe update for UI controls because this method runs on a background thread
-            SetStatus(_localization.GetContent("ProgressBarAnalyseConnectionMessage", lang));
+            ((IUiUpdater)this).SetStatus(_localization.GetContent("ProgressBarAnalyseConnectionMessage", lang));
 
             // Needs connection string from config file, needs to be encrypted -> AES Maybe Login Page and safe last used connection
-            string conn = GetConnectionString();
+            string conn = _configManager.GetConnectionString(_config);
 
             AttachmentRepository repository = new AttachmentRepository(conn, _logger);
             FileService fileService = new FileService();
@@ -392,25 +360,25 @@ namespace FileConsistencyManager
                 repository,
                 fileService,
                 comparisonService,
-                _logger);
+                _logger,
+                uiUpdater: this);
 
-            UpdateProgress(50, showText: false);
+            ((IUiUpdater)this).UpdateProgress(50, showText: false);
 
-            string databaseName = _config.Connection.Server + "\\" + _config.Connection.Database;
-            List<ComparisonResult> results = manager.RunCheck(databaseName, _localization, logText);
+            string databaseName = _configManager.GetDatabaseName(_config);
+            List<ComparisonResult> results = manager.RunCheck(databaseName, _localization, _configManager, _config, logText);
 
-            UpdateProgress(100);
+            ((IUiUpdater)this).UpdateProgress(100);
 
             _allResults = results;
 
             // Show results 
-            SetStatus(_localization.GetContent("ProgressBarAnalyseDoneMessage", lang), resultsCount: _allResults.Count.ToString());
+            ((IUiUpdater)this).SetStatus(_localization.GetContent("ProgressBarAnalyseDoneMessage", lang), resultsCount: _allResults.Count.ToString());
         }
 
         private void ExecuteAction(ActionType actionType)
         {
-            string lang = _localization.GetCurrentLanguage();
-            string conn = GetConnectionString();
+            string conn = _configManager.GetConnectionString(_config);
 
             List<ComparisonResult> selectedItems = GetSelectedResults();
 
@@ -433,9 +401,6 @@ namespace FileConsistencyManager
                     break;
                 case ActionType.Archive:
                     actionText = _localization.GetContent("ArchiveActionText", lang);
-                    break;
-                case ActionType.Ignore:
-                    actionText = _localization.GetContent("IgnoreActionText", lang);
                     break;
                 default:
                     actionText = "test";
@@ -484,9 +449,6 @@ namespace FileConsistencyManager
                 case ActionType.Archive:
                     actionService.ArchiveFile(selectedItems, $@"{_config.Path.ArchivePath}");
                     break;
-                case ActionType.Ignore:
-                    actionService.IgnoreEntry(selectedItems);
-                    break;
             }
 
             MessageBox.Show(
@@ -505,8 +467,6 @@ namespace FileConsistencyManager
 
         private void ApplyFilter()
         {
-            string lang = _localization.GetCurrentLanguage();
-
             string selected = cmbFilter.SelectedItem!.ToString()!;
 
             List<ComparisonResult> filtered = _allResults;
@@ -534,25 +494,26 @@ namespace FileConsistencyManager
             dgvResults.Refresh();
         }
 
-        private void ApplyLanguage(Dictionary<string, string> lang)
+        private void ApplyLanguage(string forcedLang)
         {
             // Buttons
-            btnStart.Text = lang["Start"];
-            btnDelete.Text = lang["Delete"];
-            btnIgnore.Text = lang["Ignore"];
-            btnArchive.Text = lang["Archive"];
+            btnStart.Text = _localization.GetContent("Start", forcedLang);
+            btnDelete.Text = _localization.GetContent("Delete", forcedLang);
+            btnArchive.Text = _localization.GetContent("Archive", forcedLang);
+            btnSettings.Text = _localization.GetContent("Settings", forcedLang);
 
             // Labels
-            lblCmbFilterTitle.Text = lang["FilterOptionsTitle"];
-            lblCmbLanguageTitle.Text = lang["FilterLanguageTitle"];
-            lblMissing.Text = lang["MissingFilesLabel"];
-            lblOrphan.Text = lang["OrphanFilesLabel"];
-            if (lblStatus.Text != string.Empty) lblStatus.Text = lang["ProgressBarAnalyseDoneMessage"];
+            lblCmbFilterTitle.Text = _localization.GetContent("FilterOptionsTitle", forcedLang);
+            lblCmbLanguageTitle.Text = _localization.GetContent("FilterLanguageTitle", forcedLang);
+            lblMissing.Text = _localization.GetContent("MissingFilesLabel", forcedLang);
+            lblOrphan.Text = _localization.GetContent("OrphanFilesLabel", forcedLang);
+            lblConnectionLabel.Text = string.Format(_localization.GetContent("ConnectedToLabel", forcedLang), _configManager.GetDatabaseName(_config));
+            lblEntriesFound.Text = _localization.GetContent("EntriesFoundLabel", forcedLang);
+            if (!string.IsNullOrEmpty(lblStatus.Text)) lblStatus.Text = _localization.GetContent("ProgressBarAnalyseDoneMessage", forcedLang);
 
             // Tooltip
-            tip.SetToolTip(btnDelete, lang["DeleteButtonToolTip"]);
-            tip.SetToolTip(btnArchive, lang["ArchiveButtonToolTip"]);
-            tip.SetToolTip(btnIgnore, lang["IgnoreButtonToolTip"]);
+            tip.SetToolTip(btnDelete, _localization.GetContent("DeleteButtonToolTip", forcedLang));
+            tip.SetToolTip(btnArchive, _localization.GetContent("ArchiveButtonToolTip", forcedLang));
 
             // DataGridView
             ApplyFilter();
@@ -564,7 +525,7 @@ namespace FileConsistencyManager
             btnStart.Enabled = enabled;
             btnDelete.Enabled = enabled;
             btnArchive.Enabled = enabled;
-            btnIgnore.Enabled = enabled;
+            btnSettings.Enabled = enabled;
             cmbFilter.Enabled = enabled;
             cmbLanguage.Enabled = enabled;
         }
@@ -597,10 +558,5 @@ namespace FileConsistencyManager
         }
 
         #endregion
-
-        private void btnSettings_Click(object sender, EventArgs e)
-        {
-            OpenSettingsForm();
-        }
     }
 }

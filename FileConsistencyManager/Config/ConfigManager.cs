@@ -8,21 +8,24 @@ using FileConsistencyManager.Logging;
 using FileConsistencyManager.Models;
 using FileConsistencyManager.Localization;
 using FileConsistencyManager.Security;
+using Microsoft.Data.SqlClient;
 
 namespace FileConsistencyManager.Config
 {
-    public class ConfigLoader
+    public class ConfigManager
     {
         private readonly string _path;
         private Localize _localization;
+        private readonly Logger _logger;
 
-        public ConfigLoader(string path, Localize localization)
+        public ConfigManager(string path, Localize localization, Logger logger)
         {
             this._path = path;
             this._localization = localization;
+            this._logger = logger;
         }
 
-        public AppConfig Load(Logger logger, bool showDialogs = false)
+        public AppConfig Load(bool showDialogs = false)
         {
             AppConfig config = null;
             var fullPath = Path.Combine(AppContext.BaseDirectory, _path);
@@ -31,7 +34,7 @@ namespace FileConsistencyManager.Config
             {
                 if (!File.Exists(fullPath))
                 {
-                    logger.Log($"Configuration file not found: {fullPath}. Using defaults.", LogLevel.Warning);
+                    _logger.Log($"Configuration file not found: {fullPath}. Using defaults.", LogLevel.Warning);
                     if (showDialogs)
                     {
                         string message = string.Format(_localization.GetContent("ConfigNotFoundErrorMessage", _localization.GetCurrentLanguage()), fullPath);
@@ -54,7 +57,7 @@ namespace FileConsistencyManager.Config
 
                 if (deserialized == null)
                 {
-                    logger.Log($"Failed to deserialize configuration: {fullPath}. Using defaults.", LogLevel.Warning);
+                    _logger.Log($"Failed to deserialize configuration: {fullPath}. Using defaults.", LogLevel.Warning);
                     if (showDialogs)
                     {
                         string message = string.Format(_localization.GetContent("ConfigLoadDeserializeMessage", _localization.GetCurrentLanguage()), fullPath);
@@ -96,8 +99,8 @@ namespace FileConsistencyManager.Config
             }
             catch (JsonException jex)
             {
-                logger.LogException(jex);
-                logger.Log($"Error parsing configuration file '{_path}'. Using defaults.", LogLevel.Warning);
+                _logger.LogException(jex);
+                _logger.Log($"Error parsing configuration file '{_path}'. Using defaults.", LogLevel.Warning);
                 if (showDialogs)
                 {
                     string message = string.Format(_localization.GetContent("ConfigParseErrorMessage", _localization.GetCurrentLanguage()), fullPath);
@@ -110,8 +113,8 @@ namespace FileConsistencyManager.Config
             }
             catch (Exception ex)
             {
-                logger.LogException(ex);
-                logger.Log($"Unexpected error loading configuration '{_path}'. Using defaults.", LogLevel.Error);
+                _logger.LogException(ex);
+                _logger.Log($"Unexpected error loading configuration '{_path}'. Using defaults.", LogLevel.Error);
                 if (showDialogs)
                 {
                     string message = string.Format(_localization.GetContent("ConfigUnexpectedErrorMessage", _localization.GetCurrentLanguage()), fullPath);
@@ -123,6 +126,28 @@ namespace FileConsistencyManager.Config
                 return config;
             }
         }
+
+        #region Get Methods
+
+        public string GetConnectionString(AppConfig config)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Server=").Append($@"{config.Connection.Server}")
+                .Append(";Database=").Append(config.Connection.Database)
+                .Append(";User Id=").Append(config.Connection.UserId)
+                .Append(";Password=").Append(config.Connection.Password)
+                .Append(";TrustServerCertificate=True;");
+            return sb.ToString();
+        }
+
+        public string GetDatabaseName(AppConfig config)
+        {
+            return config.Connection.Server + "\\" + config.Connection.Database;
+        }
+
+        #endregion
+
+        #region Set Methods
 
         public void SetNewConfig(AppConfig config, Logger logger, bool showDialogs = true)
         {
@@ -179,5 +204,37 @@ namespace FileConsistencyManager.Config
                 return;
             }
         }
+
+        public string SetConnectionString(string server, string database, string userId, string password)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Server=").Append(server)
+                .Append(";Database=").Append(database)
+                .Append(";User Id=").Append(userId)
+                .Append(";Password=").Append(password)
+                .Append(";TrustServerCertificate=True;");
+            return sb.ToString();
+        }
+
+        #endregion
+
+        #region Tests
+
+        public async Task<bool> TestConnection(AppConfig config, string connection)
+        {
+            try
+            {
+                using var conn = new SqlConnection(connection);
+                await conn.OpenAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogException(ex);
+                return false;
+            }
+            return true;
+        }
+
+        #endregion
     }
 }

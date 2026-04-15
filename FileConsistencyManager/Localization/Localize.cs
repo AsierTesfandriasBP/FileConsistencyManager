@@ -37,27 +37,13 @@ namespace FileConsistencyManager.Localization
             }
         }
 
-        public Dictionary<string, string> GetCurrentLanguageDictionary()
-        {
-            switch (currentLanguage)
-            {
-                case "en":
-                    return en;
-                case "de":
-                    return de;
-                default:
-                    // Fallback: Return an empty dictionary if no language is set
-                    return new Dictionary<string, string>();
-            }
-        }
-
         public Dictionary<string, string> de = new Dictionary<string, string>()
         {
             // Buttons
             { "Start", "Scan starten" },
             { "Delete", "Löschen [Dauerhaft]" },
-            { "Ignore", "Ignorieren" },
             { "Archive", "Archivieren"},
+            { "Settings", "Config Einstellungen" },
             // Filter Options
             { "Culture", "Deutsch" },
             { "FilterAll", "Alle" },
@@ -69,7 +55,6 @@ namespace FileConsistencyManager.Localization
             { "FilterLanguageTitle", "Sprache:" },
             // MessageBox Messages & Words to insert into Messages
             { "DeleteActionText", "löschen" },
-            { "IgnoreActionText", "ignorieren" },
             { "ArchiveActionText", "archivieren" },
             { "ConfirmMultipleMessage", "Möchten Sie wirklich {1} Einträge {0}?"},
             { "ConfirmMessage", "Möchten Sie diesen Eintrag {0}?" },
@@ -77,16 +62,18 @@ namespace FileConsistencyManager.Localization
             { "ActionCompleteMessage", "Aktion abgeschlossen." },
             // ProgressBar Labels
             { "ProgressBarAnalyseStartMessage", "Analyse läuft..." },
-            { "ProgressBarAnalyseConnectionMessage", "Verbindung zur MSSQL-Datenbank wird aufgebaut..." },
-            { "ProgressBarAnalyseDoneMessage", "Einträge gefunden!" },
+            { "ProgressBarAnalyseConnectionDatabaseMessage", "Verbindung zur MSSQL-Datenbank wird aufgebaut..." },
+            { "ProgressBarAnalyseConnectionFilepathMessage", "Verbindung zum Attachments-Dateipfad wird aufgebaut..." },
+            { "ProgressBarAnalyseDoneMessage", "Erfolgreich!" },
             { "ProgressBarAnalyseStatusMessage", "Status: {0}%" },
             // Tooltips
             { "DeleteButtonToolTip", "Löscht die ausgewählten Dateien/Datenbank Einträge" },
             { "ArchiveButtonToolTip", "Verschiebt Dateien ins Archiv" },
-            { "IgnoreButtonToolTip", "Markiert Einträge als ignoriert" },
             // Labels
-            { "MissingFilesLabel", "Dateien in der Datenbank"},
+            { "MissingFilesLabel", "Einträge in der Datenbank"},
             { "OrphanFilesLabel", "Dateien im Dateipfad"},
+            { "ConnectedToLabel", "Verbunden mit: {0}" },
+            { "EntriesFoundLabel", "Gefundene Einträge (insgesamt):" },
             // DataGridView Headers
             { "DGVHeaderFile", "Datei" },
             { "DGVHeaderPath", "Quelle" },
@@ -103,6 +90,24 @@ namespace FileConsistencyManager.Localization
             { "ConfigUnexpectedErrorMessage", "Unerwarteter Fehler beim Laden der Konfigurationsdatei '{0}'. Bitte überprüfen Sie die Datei und versuchen Sie es erneut." },
             { "ConfigSaveErrorMessage", "Fehler beim Schreiben der Konfigurationsdatei '{0}'. Bitte überprüfen Sie das Dateiformat und den Inhalt." },
             { "ConfigSuccessfulSaveMessage", "Konfigurationsdatei '{0}' erfolgreich gespeichert." },
+            // Settings Page
+            { "SettingsDatabaseConnectionTitle", "Standard Datenbank Verbindung" },
+            { "SettingsServerLabel", "Server:" },
+            { "SettingsDatabaseLabel", "Datenbank:" },
+            { "SettingsUserIdLabel", "Benutzer/UserId:" },
+            { "SettingsPasswordLabel", "Passwort:" },
+            { "SettingsPathTitle", "Standard Pfad" },
+            { "SettingsArchivePathLabel", "Archiv-Pfad:" },
+            { "SettingsLanguageTitle", "Standard Sprache" },
+            { "SettingsLanguageLabel", "Sprache:" },
+            { "SettingsTestConnectionButton", "Verbindung testen" },
+            { "SettingsSaveButton", "Einstellungen speichern"  },
+            // Settings Page Messages
+            { "SettingsSavedAfterLoadFromMain", "Starten Sie die Anwendung neu, um sicherzustellen, dass die Einstellungen übernommen werden." },
+            { "ValidationAllFieldsErrorMessage", "Bitte füllen Sie alle erforderlichen Felder aus: Server, Datenbank, Benutzer/UserId, Passwort, Archivpfad und Sprache." },
+            { "ValidationDatabaseFieldsErrorMessage", "Bitte füllen Sie alle erforderlichen Felder aus: Server, Datenbank, Benutzer/UserId, Passwort." },
+            { "SettingsTestConnectionSuccessMessage", "Verbindung erfolgreich!" },
+            { "SettingsTestConnectionFailedMessage", "Verbindung fehlgeschlagen. Bitte überprüfen Sie Ihre Einstellungen und versuchen Sie es erneut." },
         };
 
         public Dictionary<string, string> en = new Dictionary<string, string>()
@@ -110,8 +115,8 @@ namespace FileConsistencyManager.Localization
             // Buttons
             { "Start", "Start Scan" },
             { "Delete", "Delete [Permanent]" },
-            { "Ignore", "Ignore" },
             { "Archive", "Archive" },
+            { "Settings", "Config Settings" },
             // Filter Options
             { "Culture", "English" },
             { "FilterAll", "All" },
@@ -119,11 +124,10 @@ namespace FileConsistencyManager.Localization
             { "FilterOrphanFiles", "Orphan Files" },
             { "FilterExistsTitle", "Existing Entries" },
             // Filter Labels
-            { "FilterOptionsTitle", "Filter:" },
+            { "FilterOptionsTitle", "FilterTest:" },
             { "FilterLanguageTitle", "Language:" },
             // MessageBox Messages & Words to insert into Messages
             { "DeleteActionText", "deleted" },
-            { "IgnoreActionText", "ignored" },
             { "ArchiveActionText", "archived" },
             { "ConfirmMultipleMessage", "Are you sure you want {0} entries to be {1}?"},
             { "ConfirmMessage", "Are you sure you want to {0} this entry?" },
@@ -131,16 +135,18 @@ namespace FileConsistencyManager.Localization
             { "ActionCompleteMessage", "Action complete." },
             // ProgressBar Labels
             { "ProgressBarAnalyseStartMessage", "Analysis starting..." },
-            { "ProgressBarAnalyseConnectionMessage", "Trying to connect to MSSQL-Database..." },
-            { "ProgressBarAnalyseDoneMessage", "entries found!" },
+            { "ProgressBarAnalyseConnectionDatabaseMessage", "Trying to connect to MSSQL-Database..." },
+            { "ProgressBarAnalyseConnectionFilepathMessage", "Trying to connect to Attachments Filepath..." },
+            { "ProgressBarAnalyseDoneMessage", "Successfull!" },
             { "ProgressBarAnalyseStatusMessage", "Status: {0}%" },
             // Tooltips
             { "DeleteButtonToolTip", "Deletes all selected Files/Database Entries" },
             { "ArchiveButtonToolTip", "Moves the Files to the archive" },
-            { "IgnoreButtonToolTip", "Marks all selected entries as ignored" },
             // Labels
-            { "MissingFilesLabel", "Files in Database"},
+            { "MissingFilesLabel", "Entries in Database"},
             { "OrphanFilesLabel", "Files in Filepath"},
+            { "ConnectedToLabel", "Connected to: {0}" },
+            { "EntriesFoundLabel", "Found Entries (in Total):" },
             // DataGridView Headers
             { "DGVHeaderFile", "File" },
             { "DGVHeaderPath", "Source" },
@@ -157,6 +163,24 @@ namespace FileConsistencyManager.Localization
             { "ConfigUnexpectedErrorMessage", "Unexpected error loading configuration file '{0}'. Please check the file and try again." },
             { "ConfigSaveErrorMessage", "Error writing configuration to file '{0}'. Please check the file format and content." },
             { "ConfigSuccessfulSaveMessage", "Configuration file '{0}' saved successfully." },
+            // Settings Page
+            { "SettingsDatabaseConnectionTitle", "Default Database Connection" },
+            { "SettingsServerLabel", "Server:" },
+            { "SettingsDatabaseLabel", "Database:" },
+            { "SettingsUserIdLabel", "User/UserId:" },
+            { "SettingsPasswordLabel", "Password:" },
+            { "SettingsPathTitle", "Default Path" },
+            { "SettingsArchivePathLabel", "Archive Path:" },
+            { "SettingsLanguageTitle", "Default Language" },
+            { "SettingsLanguageLabel", "Language:" },
+            { "SettingsTestConnectionButton", "Test Connection" },
+            { "SettingsSaveButton", "Save Settings" },
+            // Settings Page Messages
+            { "SettingsSavedAfterLoadFromMain", "Please restart the application, to make sure that the settings apply." },
+            { "ValidationAllFieldsErrorMessage", "Please fill in all required fields: Server, Database, UserId, Password, Archivepath and Language." },
+            { "ValidationDatabaseFieldsErrorMessage", "Please fill in all required fields: Server, Database, UserId, Password." },
+            { "SettingsTestConnectionSuccessMessage", "Connection successful!" },
+            { "SettingsTestConnectionFailedMessage", "Connection failed. Please check your settings and try again." },
         };
     }
 }

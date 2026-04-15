@@ -15,22 +15,40 @@ namespace FileConsistencyManager
     public partial class Settings : Form
     {
         private AppConfig _config;
-        private ConfigLoader _configLoader;
+        private ConfigManager _configManager;
         private Localize _localization;
+        private string _lang;
         private Logger _logger;
         private string _logFilePath;
         private bool _isMainOpen;
 
-        public Settings(AppConfig confg, Logger logger, ConfigLoader configLoader, Localize localization, bool isMainOpen = false)
+        public Settings(AppConfig confg, Logger logger, ConfigManager configManager, Localize localization, bool isMainOpen = false)
         {
             _config = confg;
             _localization = localization;
+            _lang = localization.GetCurrentLanguage();
             _logger = logger;
             _logFilePath = _logger.GetLogFilePath();
-            _configLoader = configLoader;
+            _configManager = configManager;
             _isMainOpen = isMainOpen;
             InitializeComponent();
-            GetConfig();
+            SetupUI();
+            GetConfig();    
+        }
+
+        public void SetupUI()
+        {
+            lblConnectionTitle.Text = _localization.GetContent("SettingsDatabaseConnectionTitle", _lang);
+            lblServer.Text = _localization.GetContent("SettingsServerLabel", _lang);
+            lblDatabase.Text = _localization.GetContent("SettingsDatabaseLabel", _lang);
+            lblUserId.Text = _localization.GetContent("SettingsUserIdLabel", _lang);
+            lblPassword.Text = _localization.GetContent("SettingsPasswordLabel", _lang);
+            lblPathTitle.Text = _localization.GetContent("SettingsPathTitle", _lang);
+            lblArchivePath.Text = _localization.GetContent("SettingsArchivePathLabel", _lang);
+            lblLanguageTitle.Text = _localization.GetContent("SettingsLanguageTitle", _lang);
+            lblLanguage.Text = _localization.GetContent("SettingsLanguageLabel", _lang);
+            btnConnectionTest.Text = _localization.GetContent("SettingsTestConnectionButton", _lang);
+            btnSave.Text = _localization.GetContent("SettingsSaveButton", _lang);
         }
 
         public void GetConfig()
@@ -47,11 +65,6 @@ namespace FileConsistencyManager
                     tbArchivePath.Text = logFolder;
                     cmbLanguage.SelectedItem = "en";
                     return;
-                }
-
-                if (_isMainOpen)
-                {
-                    MessageBox.Show("Configuration loaded from main application instance. You can adjust settings and save, but changes will only take effect after restarting the application.", "Configuration Loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 tbServer.Text = _config.Connection?.Server ?? string.Empty;
@@ -73,17 +86,22 @@ namespace FileConsistencyManager
             catch (Exception ex)
             {
                 _logger.LogException(ex);
-                MessageBox.Show($"Fehler beim Laden der Konfiguration: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);    // check
+                MessageBox.Show(
+                    _localization.GetContent("ConfigLoadErrorMessage", _lang), 
+                    _localization.GetContent("CustomTextError", _lang), 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         public bool isEverythingFilled()
         {
-            // ArchivePath may be empty (populated later from DB). Validate only required connection fields and language.
             if (!IsDatabaseCredentialsFilled() ||
-                string.IsNullOrWhiteSpace(cmbLanguage.Text))
+                !IsGeneralSettingsFilled())
             {
-                MessageBox.Show("Please fill in all required fields: Server, Database, UserId, Password and Language.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    _localization.GetContent("ValidationAllFieldsErrorMessage", _lang), 
+                    _localization.GetContent("CustomTextError", _lang), 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             return true;
@@ -97,15 +115,10 @@ namespace FileConsistencyManager
                 || string.IsNullOrWhiteSpace(tbPassword.Text));
         }
 
-        private string BuildConnectionString()
+        public bool IsGeneralSettingsFilled()
         {
-            var sb = new StringBuilder();
-            sb.Append("Server=").Append(tbServer.Text)
-              .Append(";Database=").Append(tbDatabase.Text)
-              .Append(";User Id=").Append(tbUserId.Text)
-              .Append(";Password=").Append(tbPassword.Text)
-              .Append(";TrustServerCertificate=True;");
-            return sb.ToString();
+            return !(string.IsNullOrWhiteSpace(tbArchivePath.Text) ||
+                string.IsNullOrWhiteSpace(cmbLanguage.Text));
         }
 
         private async void TestConnection(object? sender, EventArgs e)
@@ -114,20 +127,37 @@ namespace FileConsistencyManager
             {
                 if (!IsDatabaseCredentialsFilled())
                 {
-                    MessageBox.Show("Please enter Server, Database, UserId and Password before testing the connection.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(
+                        _localization.GetContent("ValidationDatabaseFieldsErrorMessage", _lang), 
+                        _localization.GetContent("CustomTextError", _lang), 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 btnSave.Enabled = false;
                 btnConnectionTest.Enabled = false;
 
-                string connStr = BuildConnectionString();
+                string connectionStr = _configManager.SetConnectionString(tbServer.Text, tbDatabase.Text, tbUserId.Text, tbPassword.Text);
+                Task<bool> testedConnection = _configManager.TestConnection(_config, connectionStr);
+                await testedConnection;
 
-                using var conn = new SqlConnection(connStr);
-                await conn.OpenAsync();
-
-                MessageBox.Show("Connection successful.", "Connection Test", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _logger?.Log("Database connection test succeeded.", LogLevel.Info);
+                if (testedConnection.Result)
+                {
+                    MessageBox.Show(
+                        _localization.GetContent("SettingsTestConnectionSuccessMessage", _lang),
+                        _localization.GetContent("CustomTextInformation", _lang),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _logger?.Log("Database connection test succeeded.", LogLevel.Info);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        _localization.GetContent("SettingsTestConnectionFailedMessage", _lang),
+                        _localization.GetContent("CustomTextError", _lang),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _logger?.Log("Database connection test failed.", LogLevel.Error);
+                }
+                
 
                 btnSave.Enabled = true;
                 btnConnectionTest.Enabled = true;
@@ -137,7 +167,11 @@ namespace FileConsistencyManager
                 btnSave.Enabled = true;
                 btnConnectionTest.Enabled = true;
                 _logger?.LogException(ex);
-                MessageBox.Show($"Connection failed: {ex.Message}", "Connection Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                MessageBox.Show(
+                    _localization.GetContent("SettingsTestConnectionFailedMessage", _lang), 
+                    _localization.GetContent("CustomTextError", _lang), 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -162,10 +196,9 @@ namespace FileConsistencyManager
                 },
             };
 
-            _configLoader.SetNewConfig(newConfig, _logger);
+            _configManager.SetNewConfig(newConfig, _logger);
             _config = newConfig;
 
-            // close dialog with OK
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
@@ -178,6 +211,11 @@ namespace FileConsistencyManager
                 return;
 
             SaveConfig();
+            if(_isMainOpen)
+                MessageBox.Show(
+                    _localization.GetContent("SettingsSavedAfterLoadFromMain", _lang), 
+                    _localization.GetContent("CustomTextInformation", _lang), 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

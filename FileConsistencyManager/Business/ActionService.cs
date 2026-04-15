@@ -74,18 +74,6 @@ namespace FileConsistencyManager.Business
 
         #endregion
 
-        #region Ignore
-
-        public void IgnoreEntry(List<ComparisonResult> result)
-        {
-            foreach (var item in result)
-            {
-                _logger.Log($"Entry ignored: {item.FileName} ({item.Type})", LogLevel.Info);
-            }
-        }
-
-        #endregion
-
         #region Archive
 
         public void ArchiveFile(List<ComparisonResult> sourcePath, string archivePath)

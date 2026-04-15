@@ -30,10 +30,10 @@ namespace FileConsistencyManager
 
             // First, create a temporary localizer (english) to allow ConfigLoader to display messages
             var tempLocalize = new Localize("en");
-            var cfgLoader = new ConfigLoader("config.json", tempLocalize);
+            var cfgLoader = new ConfigManager("config.json", tempLocalize, logger);
 
             // Load config (ConfigLoader will decrypt password if possible)
-            var appConfig = cfgLoader.Load(logger);
+            var appConfig = cfgLoader.Load();
 
             // Determine language from config (fallback to 'en')
             var configuredLang = appConfig?.Language?.Current;
@@ -46,7 +46,7 @@ namespace FileConsistencyManager
 
             // Recreate localizer and config loader with correct language for messages
             var localize = new Localize(configuredLang);
-            cfgLoader = new ConfigLoader("config.json", localize);
+            cfgLoader = new ConfigManager("config.json", localize, logger);
 
             // If config is missing or incomplete, show settings form
             bool needsSettings = false;
@@ -65,7 +65,7 @@ namespace FileConsistencyManager
                 {
                     var dr = settingsForm.ShowDialog();
                     // After settings saved/closed, reload config
-                    appConfig = cfgLoader.Load(logger);
+                    appConfig = cfgLoader.Load();
                     // Update language if changed
                     configuredLang = appConfig?.Language?.Current ?? "en";
                     localize.SetCurrentLanguage(configuredLang);

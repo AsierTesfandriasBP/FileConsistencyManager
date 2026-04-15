@@ -7,7 +7,6 @@ namespace FileConsistencyManager.Models
     public enum ActionType
     {
         Delete,
-        Archive,
-        Ignore
+        Archive
     }
 }
