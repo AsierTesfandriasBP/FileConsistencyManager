@@ -169,6 +169,7 @@ namespace FileConsistencyManager
             catch (Exception ex)
             {
                 UIEnabled(true);
+                ButtonEnabled(false);
 
                 _logger.LogException(ex);
                 MessageBox.Show(
@@ -274,8 +275,7 @@ namespace FileConsistencyManager
             int selectedCount = dgvResults.SelectedRows.Count;
             bool hasSelection = dgvResults.SelectedRows.Count > 0;
 
-            btnDelete.Enabled = hasSelection;
-            btnArchive.Enabled = hasSelection;
+            ButtonEnabled(hasSelection);
 
             if (hasSelection)
             {
@@ -349,7 +349,6 @@ namespace FileConsistencyManager
             // Used thread-safe update for UI controls because this method runs on a background thread
             ((IUiUpdater)this).SetStatus(_localization.GetContent("ProgressBarAnalyseConnectionMessage", lang));
 
-            // Needs connection string from config file, needs to be encrypted -> AES Maybe Login Page and safe last used connection
             string conn = _configManager.GetConnectionString(_config);
 
             AttachmentRepository repository = new AttachmentRepository(conn, _logger);
@@ -363,16 +362,13 @@ namespace FileConsistencyManager
                 _logger,
                 uiUpdater: this);
 
-            ((IUiUpdater)this).UpdateProgress(50, showText: false);
+            ((IUiUpdater)this).UpdateProgress(10, showText: false);
 
             string databaseName = _configManager.GetDatabaseName(_config);
             List<ComparisonResult> results = manager.RunCheck(databaseName, _localization, _configManager, _config, logText);
 
-            ((IUiUpdater)this).UpdateProgress(100);
-
             _allResults = results;
 
-            // Show results 
             ((IUiUpdater)this).SetStatus(_localization.GetContent("ProgressBarAnalyseDoneMessage", lang), resultsCount: _allResults.Count.ToString());
         }
 
@@ -523,11 +519,16 @@ namespace FileConsistencyManager
         private void UIEnabled(bool enabled)
         {
             btnStart.Enabled = enabled;
-            btnDelete.Enabled = enabled;
-            btnArchive.Enabled = enabled;
+            ButtonEnabled(enabled);
             btnSettings.Enabled = enabled;
             cmbFilter.Enabled = enabled;
             cmbLanguage.Enabled = enabled;
+        }
+
+        private void ButtonEnabled(bool enabled)
+        {
+            btnDelete.Enabled = enabled;
+            btnArchive.Enabled = enabled;
         }
 
         #endregion

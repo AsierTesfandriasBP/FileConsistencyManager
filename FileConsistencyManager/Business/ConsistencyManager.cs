@@ -45,22 +45,22 @@ namespace FileConsistencyManager.Business
 
                 // Load database entries
                 _uiUpdater?.SetStatus(lang.GetContent("ProgressBarAnalyseConnectionDatabaseMessage", lang.GetCurrentLanguage()));
-                _uiUpdater?.UpdateProgress(10, showText: false);
+                _uiUpdater?.UpdateProgress(20, showText: false);
 
                 string connectionStr = configManager.GetConnectionString(config);
                 Task<bool> testedConnection = configManager.TestConnection(config, connectionStr);
-
-                _uiUpdater?.SetStatus(lang.GetContent("ProgressBarAnalyseConnectionFilepathMessage", lang.GetCurrentLanguage()));
-                _uiUpdater?.UpdateProgress(20, showText: false);
 
                 var attachments = _repository.GetAllAttachments();
                 if (logText) _logger.Log($"Loaded database entries: {attachments.Count}", LogLevel.Info);
                 _uiUpdater?.UpdateProgress(40, showText: false);
 
+                _uiUpdater?.SetStatus(lang.GetContent("ProgressBarAnalyseConnectionFilepathMessage", lang.GetCurrentLanguage()));
+                _uiUpdater?.UpdateProgress(60, showText: false);
+                
                 // Load files
                 var files = _fileService.GetAllFiles(_repository.GetRootPath());
                 if (logText) _logger.Log($"Found files: {files.Count}", LogLevel.Info);
-                _uiUpdater?.UpdateProgress(70, showText: false);
+                _uiUpdater?.UpdateProgress(80, showText: false);
 
                 // Compare and get results
                 var results = _comparisonService.Compare(attachments, files, databaseName);
