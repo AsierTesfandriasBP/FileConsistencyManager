@@ -160,9 +160,11 @@ namespace FileConsistencyManager
 
                 int missingFiles = _allResults.Count(r => r.Type == IssueType.Types.MissingFile);
                 int orphanFiles = _allResults.Count(r => r.Type == IssueType.Types.OrphanFile);
+                int existsFiles = _allResults.Count(r => r.Type == IssueType.Types.Exists);
 
                 lblMissingCount.Text = missingFiles.ToString();
                 lblOrphanCount.Text = orphanFiles.ToString();
+                lblExistsCount.Text = existsFiles.ToString();
 
                 UIEnabled(true);
             }
@@ -405,9 +407,7 @@ namespace FileConsistencyManager
 
             string message;
             if (selectedItems.Count > 1)
-            {
                 message = _localization.GetContent("ConfirmMultipleMessage", lang);
-            }
             else
                 message = _localization.GetContent("ConfirmMessage", lang);
             message = string.Format(message, actionText, selectedItems.Count);
@@ -423,11 +423,20 @@ namespace FileConsistencyManager
 
             ActionService actionService = new ActionService(_logger);
 
+            List<ComparisonResult> missingFiles = selectedItems.Where(r => r.Type == IssueType.Types.MissingFile).ToList();
+            List<ComparisonResult> orphanFiles = selectedItems.Where(r => r.Type == IssueType.Types.OrphanFile).ToList();
+            List<ComparisonResult> existingFiles = selectedItems.Where(r => r.Type == IssueType.Types.Exists).ToList();
+
+            if (existingFiles.Count > 0)
+                MessageBox.Show(
+                    _localization.GetContent("ExistsInformationMessage", lang),
+                    _localization.GetContent("CustomTextInformation", lang),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
             switch (actionType)
             {
                 case ActionType.Delete:
-                    List<ComparisonResult> missingFiles = selectedItems.Where(r => r.Type == IssueType.Types.MissingFile).ToList();
-                    List<ComparisonResult> orphanFiles = selectedItems.Where(r => r.Type == IssueType.Types.OrphanFile).ToList();
                     if (orphanFiles.Count > 0) actionService.DeleteFile(orphanFiles);
                     if (missingFiles.Count > 0)
                     {
@@ -443,6 +452,13 @@ namespace FileConsistencyManager
                     }
                     break;
                 case ActionType.Archive:
+                    if (missingFiles.Count > 0)
+                        MessageBox.Show(
+                            _localization.GetContent("ExistsAndMissingInformationMessage", lang),
+                            _localization.GetContent("CustomTextInformation", lang),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
                     actionService.ArchiveFile(selectedItems, $@"{_config.Path.ArchivePath}");
                     break;
             }
@@ -503,6 +519,7 @@ namespace FileConsistencyManager
             lblCmbLanguageTitle.Text = _localization.GetContent("FilterLanguageTitle", forcedLang);
             lblMissing.Text = _localization.GetContent("MissingFilesLabel", forcedLang);
             lblOrphan.Text = _localization.GetContent("OrphanFilesLabel", forcedLang);
+            lblExists.Text = _localization.GetContent("ExistsFilesLabel", forcedLang);
             lblConnectionLabel.Text = string.Format(_localization.GetContent("ConnectedToLabel", forcedLang), _configManager.GetDatabaseName(_config));
             lblEntriesFound.Text = _localization.GetContent("EntriesFoundLabel", forcedLang);
             if (!string.IsNullOrEmpty(lblStatus.Text)) lblStatus.Text = _localization.GetContent("ProgressBarAnalyseDoneMessage", forcedLang);
@@ -510,6 +527,7 @@ namespace FileConsistencyManager
             // Tooltip
             tip.SetToolTip(btnDelete, _localization.GetContent("DeleteButtonToolTip", forcedLang));
             tip.SetToolTip(btnArchive, _localization.GetContent("ArchiveButtonToolTip", forcedLang));
+            tip.SetToolTip(btnSettings, _localization.GetContent("SettingsButtonToolTip", forcedLang));
 
             // DataGridView
             ApplyFilter();

@@ -49,102 +49,91 @@
             // 
             // tbServer
             // 
-            tbServer.Location = new Point(24, 56);
-            tbServer.Margin = new Padding(2, 2, 2, 2);
+            tbServer.Location = new Point(34, 93);
             tbServer.Name = "tbServer";
-            tbServer.Size = new Size(351, 23);
+            tbServer.Size = new Size(500, 31);
             tbServer.TabIndex = 0;
             // 
             // lblServer
             // 
             lblServer.AutoSize = true;
-            lblServer.Location = new Point(24, 40);
-            lblServer.Margin = new Padding(2, 0, 2, 0);
+            lblServer.Location = new Point(34, 67);
             lblServer.Name = "lblServer";
-            lblServer.Size = new Size(42, 15);
+            lblServer.Size = new Size(65, 25);
             lblServer.TabIndex = 1;
             lblServer.Text = "Server:";
             // 
             // lblDatabase
             // 
             lblDatabase.AutoSize = true;
-            lblDatabase.Location = new Point(24, 83);
-            lblDatabase.Margin = new Padding(2, 0, 2, 0);
+            lblDatabase.Location = new Point(34, 138);
             lblDatabase.Name = "lblDatabase";
-            lblDatabase.Size = new Size(58, 15);
+            lblDatabase.Size = new Size(90, 25);
             lblDatabase.TabIndex = 2;
             lblDatabase.Text = "Database:";
             // 
             // lblUserId
             // 
             lblUserId.AutoSize = true;
-            lblUserId.Location = new Point(24, 127);
-            lblUserId.Margin = new Padding(2, 0, 2, 0);
+            lblUserId.Location = new Point(34, 212);
             lblUserId.Name = "lblUserId";
-            lblUserId.Size = new Size(44, 15);
+            lblUserId.Size = new Size(69, 25);
             lblUserId.TabIndex = 3;
             lblUserId.Text = "UserID:";
             // 
             // lblPassword
             // 
             lblPassword.AutoSize = true;
-            lblPassword.Location = new Point(24, 169);
-            lblPassword.Margin = new Padding(2, 0, 2, 0);
+            lblPassword.Location = new Point(34, 282);
             lblPassword.Name = "lblPassword";
-            lblPassword.Size = new Size(60, 15);
+            lblPassword.Size = new Size(91, 25);
             lblPassword.TabIndex = 4;
             lblPassword.Text = "Password:";
             // 
             // lblArchivePath
             // 
             lblArchivePath.AutoSize = true;
-            lblArchivePath.Location = new Point(24, 304);
-            lblArchivePath.Margin = new Padding(2, 0, 2, 0);
+            lblArchivePath.Location = new Point(34, 507);
             lblArchivePath.Name = "lblArchivePath";
-            lblArchivePath.Size = new Size(77, 15);
+            lblArchivePath.Size = new Size(113, 25);
             lblArchivePath.TabIndex = 5;
             lblArchivePath.Text = "Archive Path:";
             // 
             // tbDatabase
             // 
-            tbDatabase.Location = new Point(24, 100);
-            tbDatabase.Margin = new Padding(2, 2, 2, 2);
+            tbDatabase.Location = new Point(34, 167);
             tbDatabase.Name = "tbDatabase";
-            tbDatabase.Size = new Size(351, 23);
+            tbDatabase.Size = new Size(500, 31);
             tbDatabase.TabIndex = 6;
             // 
             // tbUserId
             // 
-            tbUserId.Location = new Point(24, 143);
-            tbUserId.Margin = new Padding(2, 2, 2, 2);
+            tbUserId.Location = new Point(34, 238);
             tbUserId.Name = "tbUserId";
-            tbUserId.Size = new Size(351, 23);
+            tbUserId.Size = new Size(500, 31);
             tbUserId.TabIndex = 7;
             // 
             // tbPassword
             // 
-            tbPassword.Location = new Point(24, 186);
-            tbPassword.Margin = new Padding(2, 2, 2, 2);
+            tbPassword.Location = new Point(34, 310);
             tbPassword.Name = "tbPassword";
             tbPassword.PasswordChar = '*';
-            tbPassword.Size = new Size(351, 23);
+            tbPassword.Size = new Size(500, 31);
             tbPassword.TabIndex = 8;
             // 
             // tbArchivePath
             // 
-            tbArchivePath.Location = new Point(24, 320);
-            tbArchivePath.Margin = new Padding(2, 2, 2, 2);
+            tbArchivePath.Location = new Point(34, 533);
             tbArchivePath.Name = "tbArchivePath";
-            tbArchivePath.Size = new Size(351, 23);
+            tbArchivePath.Size = new Size(500, 31);
             tbArchivePath.TabIndex = 9;
             // 
             // lblLanguage
             // 
             lblLanguage.AutoSize = true;
-            lblLanguage.Location = new Point(24, 388);
-            lblLanguage.Margin = new Padding(2, 0, 2, 0);
+            lblLanguage.Location = new Point(34, 647);
             lblLanguage.Name = "lblLanguage";
-            lblLanguage.Size = new Size(62, 15);
+            lblLanguage.Size = new Size(93, 25);
             lblLanguage.TabIndex = 10;
             lblLanguage.Text = "Language:";
             // 
@@ -152,20 +141,18 @@
             // 
             lblConnectionTitle.AutoSize = true;
             lblConnectionTitle.Font = new Font("Segoe UI", 12F);
-            lblConnectionTitle.Location = new Point(24, 5);
-            lblConnectionTitle.Margin = new Padding(2, 0, 2, 0);
+            lblConnectionTitle.Location = new Point(34, 8);
             lblConnectionTitle.Name = "lblConnectionTitle";
-            lblConnectionTitle.Size = new Size(157, 21);
+            lblConnectionTitle.Size = new Size(242, 32);
             lblConnectionTitle.TabIndex = 12;
             lblConnectionTitle.Text = "Database Connection";
             // 
             // btnSave
             // 
             btnSave.Font = new Font("Segoe UI", 12F);
-            btnSave.Location = new Point(24, 447);
-            btnSave.Margin = new Padding(2, 2, 2, 2);
+            btnSave.Location = new Point(34, 745);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(350, 35);
+            btnSave.Size = new Size(500, 58);
             btnSave.TabIndex = 13;
             btnSave.Text = "Save General Settings";
             btnSave.UseVisualStyleBackColor = true;
@@ -175,20 +162,18 @@
             // 
             lblPathTitle.AutoSize = true;
             lblPathTitle.Font = new Font("Segoe UI", 12F);
-            lblPathTitle.Location = new Point(24, 278);
-            lblPathTitle.Margin = new Padding(2, 0, 2, 0);
+            lblPathTitle.Location = new Point(34, 463);
             lblPathTitle.Name = "lblPathTitle";
-            lblPathTitle.Size = new Size(94, 21);
+            lblPathTitle.Size = new Size(145, 32);
             lblPathTitle.TabIndex = 14;
             lblPathTitle.Text = "Default Path";
             // 
             // btnConnectionTest
             // 
             btnConnectionTest.Font = new Font("Segoe UI", 12F);
-            btnConnectionTest.Location = new Point(24, 227);
-            btnConnectionTest.Margin = new Padding(2, 2, 2, 2);
+            btnConnectionTest.Location = new Point(34, 378);
             btnConnectionTest.Name = "btnConnectionTest";
-            btnConnectionTest.Size = new Size(350, 35);
+            btnConnectionTest.Size = new Size(500, 58);
             btnConnectionTest.TabIndex = 15;
             btnConnectionTest.Text = "Test Connection";
             btnConnectionTest.UseVisualStyleBackColor = true;
@@ -198,10 +183,9 @@
             // 
             lblLanguageTitle.AutoSize = true;
             lblLanguageTitle.Font = new Font("Segoe UI", 12F);
-            lblLanguageTitle.Location = new Point(24, 363);
-            lblLanguageTitle.Margin = new Padding(2, 0, 2, 0);
+            lblLanguageTitle.Location = new Point(34, 605);
             lblLanguageTitle.Name = "lblLanguageTitle";
-            lblLanguageTitle.Size = new Size(132, 21);
+            lblLanguageTitle.Size = new Size(203, 32);
             lblLanguageTitle.TabIndex = 16;
             lblLanguageTitle.Text = "Default Language";
             // 
@@ -210,17 +194,16 @@
             cmbLanguage.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbLanguage.FormattingEnabled = true;
             cmbLanguage.Items.AddRange(new object[] { "en", "de" });
-            cmbLanguage.Location = new Point(24, 405);
-            cmbLanguage.Margin = new Padding(2, 2, 2, 2);
+            cmbLanguage.Location = new Point(34, 675);
             cmbLanguage.Name = "cmbLanguage";
-            cmbLanguage.Size = new Size(351, 23);
+            cmbLanguage.Size = new Size(500, 33);
             cmbLanguage.TabIndex = 17;
             // 
             // Settings
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(399, 490);
+            ClientSize = new Size(570, 817);
             Controls.Add(cmbLanguage);
             Controls.Add(lblLanguageTitle);
             Controls.Add(btnConnectionTest);
@@ -238,10 +221,10 @@
             Controls.Add(lblDatabase);
             Controls.Add(lblServer);
             Controls.Add(tbServer);
-            Margin = new Padding(2, 2, 2, 2);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Settings";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "FileConsistencyManager";
             ResumeLayout(false);
             PerformLayout();

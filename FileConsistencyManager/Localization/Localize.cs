@@ -60,6 +60,8 @@ namespace FileConsistencyManager.Localization
             { "ConfirmMessage", "Möchten Sie diesen Eintrag {0}?" },
             { "AfterItemCountMessage", "Bitte wählen Sie mindestens einen Eintrag aus." },
             { "ActionCompleteMessage", "Aktion abgeschlossen." },
+            { "ExistsInformationMessage", "Alle 'Exists'-Typen werden ignoriert. " },
+            { "ExistsAndMissingInformationMessage", "Alle 'Exists'- und 'MissingFile'-Typen werden ignoriert. " },
             // ProgressBar Labels
             { "ProgressBarAnalyseStartMessage", "Analyse läuft..." },
             { "ProgressBarAnalyseConnectionDatabaseMessage", "Verbindung zur MSSQL-Datenbank wird aufgebaut..." },
@@ -69,9 +71,11 @@ namespace FileConsistencyManager.Localization
             // Tooltips
             { "DeleteButtonToolTip", "Löscht die ausgewählten Dateien/Datenbank Einträge" },
             { "ArchiveButtonToolTip", "Verschiebt Dateien ins Archiv" },
+            { "SettingsButtonToolTip", "Öffnet eine Forms mit allen Einstellungen" },
             // Labels
             { "MissingFilesLabel", "Einträge in der Datenbank"},
             { "OrphanFilesLabel", "Dateien im Dateipfad"},
+            { "ExistsFilesLabel", "Einträge/Dateien in Datenbank und Dateipfad"},
             { "ConnectedToLabel", "Verbunden mit: {0}" },
             { "EntriesFoundLabel", "Gefundene Einträge (insgesamt):" },
             // DataGridView Headers
@@ -133,6 +137,8 @@ namespace FileConsistencyManager.Localization
             { "ConfirmMessage", "Are you sure you want to {0} this entry?" },
             { "AfterItemCountMessage", "Please pick atleast one Entry." },
             { "ActionCompleteMessage", "Action complete." },
+            { "ExistsInformationMessage", "All 'Exists'-Types will be ignored. " },
+            { "ExistsAndMissingInformationMessage", "All 'Exists'- and 'MissingFile'-Types will be ignored. " },
             // ProgressBar Labels
             { "ProgressBarAnalyseStartMessage", "Analysis starting..." },
             { "ProgressBarAnalyseConnectionDatabaseMessage", "Trying to connect to MSSQL-Database..." },
@@ -142,9 +148,11 @@ namespace FileConsistencyManager.Localization
             // Tooltips
             { "DeleteButtonToolTip", "Deletes all selected Files/Database Entries" },
             { "ArchiveButtonToolTip", "Moves the Files to the archive" },
+            { "SettingsButtonToolTip", "Opens a form with all settings" },
             // Labels
             { "MissingFilesLabel", "Entries in Database"},
             { "OrphanFilesLabel", "Files in Filepath"},
+            { "ExistsFilesLabel", "Entries/Files in Database and Filepath"},
             { "ConnectedToLabel", "Connected to: {0}" },
             { "EntriesFoundLabel", "Found Entries (in Total):" },
             // DataGridView Headers
