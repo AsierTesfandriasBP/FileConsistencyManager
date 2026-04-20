@@ -3,10 +3,11 @@ using FileConsistencyManager.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
+using System.Data;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Mail;
+using System.Text;
 
 namespace FileConsistencyManager.Business
 {
@@ -45,26 +46,52 @@ namespace FileConsistencyManager.Business
             }
         }
 
-        public void DeleteEntry(List<string> missingFiles, string _connectionString)
+        public void DeleteEntry(List<string> missingFiles, string connectionString)
         {
+            if (missingFiles == null || missingFiles.Count == 0)
+            {
+                _logger.Log("No database entries selected for deletion.", LogLevel.Warning);
+                return;
+            }
+
             try
             {
-                //string test = @"DELETE FROM ATTACHMENT WHERE ATTACHID IN ('eDEMOA000001', 'eDEMOA000002');";
-                string idList = GetMissingFilesAsStringListForQuery(missingFiles);
-                string query = $@"DELETE FROM ATTACHMENT WHERE ATTACHID IN ({idList});";
-
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                }
 
-                foreach (var item in missingFiles)
-                {
-                    _logger.Log($"Database entry successfully deleted: {item}", LogLevel.Info);
+                    using (SqlTransaction transaction = connection.BeginTransaction())
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.Transaction = transaction;
+
+                        var parameterNames = new List<string>();
+
+                        for (int i = 0; i < missingFiles.Count; i++)
+                        {
+                            string parameterName = $"@id{i}";
+                            parameterNames.Add(parameterName);
+
+                            command.Parameters.Add(parameterName, SqlDbType.NVarChar, 50).Value = missingFiles[i];
+                        }
+
+                        command.CommandText = $@"DELETE FROM ATTACHMENT WHERE ATTACHID IN ({string.Join(", ", parameterNames)});";
+
+                        int affectedRows = command.ExecuteNonQuery();
+
+                        transaction.Commit();
+
+                        _logger.Log(
+                            $"Database delete successful. Deleted rows: {affectedRows}",
+                            LogLevel.Info);
+
+                        foreach (var item in missingFiles)
+                        {
+                            _logger.Log(
+                                $"Database entry successfully deleted: {item}",
+                                LogLevel.Info);
+                        }
+                    }
                 }
             }
             catch (Exception ex)

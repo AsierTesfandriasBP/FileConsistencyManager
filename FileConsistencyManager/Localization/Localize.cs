@@ -86,6 +86,8 @@ namespace FileConsistencyManager.Localization
             { "CustomTextInformation", "Information" },
             { "CustomTextWarning", "Warnung" },
             { "CustomTextError", "Fehler" },
+            { "CustomTextOK", "OK" },
+            { "CustomTextCancel", "Abbrechen" },
             // Config
             { "ConfigNotFoundErrorMessage", "Konfigurationsdatei '{0}' nicht gefunden." },
             { "ConfigLoadErrorMessage", "Laden der Konfigurationsdatei '{0}' fehlgeschlagen. Überprüfen Sie das Dateiformat und den Inhalt." },
@@ -133,8 +135,8 @@ namespace FileConsistencyManager.Localization
             // MessageBox Messages & Words to insert into Messages
             { "DeleteActionText", "deleted" },
             { "ArchiveActionText", "archived" },
-            { "ConfirmMultipleMessage", "Are you sure you want {0} entries to be {1}?"},
-            { "ConfirmMessage", "Are you sure you want to {0} this entry?" },
+            { "ConfirmMultipleMessage", "Are you sure you want {1} entries to be {0}?"},
+            { "ConfirmMessage", "Are you sure you want this entry to be {0}?" },
             { "AfterItemCountMessage", "Please pick atleast one Entry." },
             { "ActionCompleteMessage", "Action complete." },
             { "ExistsInformationMessage", "All 'Exists'-Types will be ignored. " },
@@ -163,6 +165,8 @@ namespace FileConsistencyManager.Localization
             { "CustomTextInformation", "Information" },
             { "CustomTextWarning", "Warning" },
             { "CustomTextError", "Error" },
+            { "CustomTextOK", "OK" },
+            { "CustomTextCancel", "Cancel" },
             // Config
             { "ConfigNotFoundErrorMessage", "Configuration file '{0}' not found." },
             { "ConfigLoadErrorMessage", "Failed to load configuration file '{0}'. Please check the file format and content." },

@@ -18,6 +18,8 @@ namespace FileConsistencyManager
             var defaultCulture = new System.Globalization.CultureInfo("en-US");
             System.Globalization.CultureInfo.DefaultThreadCurrentCulture = defaultCulture;
             System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = defaultCulture;
+            Thread.CurrentThread.CurrentCulture = defaultCulture;
+            Thread.CurrentThread.CurrentUICulture = defaultCulture;
 
             ApplicationConfiguration.Initialize();
 
@@ -43,6 +45,8 @@ namespace FileConsistencyManager
             var culture = configuredLang == "de" ? new System.Globalization.CultureInfo("de-DE") : new System.Globalization.CultureInfo("en-US");
             System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
             System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
 
             // Recreate localizer and config loader with correct language for messages
             var localize = new Localize(configuredLang);

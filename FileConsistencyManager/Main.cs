@@ -1,11 +1,12 @@
 using FileConsistencyManager.Business;
 using FileConsistencyManager.Config;
 using FileConsistencyManager.DataAccess;
+using FileConsistencyManager.Localization;
 using FileConsistencyManager.Logging;
 using FileConsistencyManager.Models;
 using FileConsistencyManager.Services;
-using FileConsistencyManager.Localization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FileConsistencyManager
 {
@@ -174,11 +175,14 @@ namespace FileConsistencyManager
                 ButtonEnabled(false);
 
                 _logger.LogException(ex);
-                MessageBox.Show(
+                CustomMessageBox.Show(
                     ex.Message,
                     _localization.GetContent("CustomTextError", _localization.GetCurrentLanguage()),
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    MessageBoxIcon.Error,
+                    MessageBoxDefaultButton.Button1,
+                    _localization,
+                    this);
                 ClearStatus();
             }
         }
@@ -214,6 +218,8 @@ namespace FileConsistencyManager
                 var culture = new System.Globalization.CultureInfo("en-US");
                 System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
                 System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = culture;
 
                 _localization.SetCurrentLanguage("en");
                 lang = _localization.GetCurrentLanguage();
@@ -224,6 +230,8 @@ namespace FileConsistencyManager
                 var culture = new System.Globalization.CultureInfo("de-DE");
                 System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
                 System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = culture;
 
                 _localization.SetCurrentLanguage("de");
                 lang = _localization.GetCurrentLanguage();
@@ -383,11 +391,14 @@ namespace FileConsistencyManager
             // if no Row was selected
             if (selectedItems.Count == 0)
             {
-                MessageBox.Show(
+                CustomMessageBox.Show(
                     _localization.GetContent("AfterItemCountMessage", lang),
                     _localization.GetContent("CustomTextInformation", lang),
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    _localization,
+                    this);
                 return;
             }
 
@@ -412,11 +423,14 @@ namespace FileConsistencyManager
                 message = _localization.GetContent("ConfirmMessage", lang);
             message = string.Format(message, actionText, selectedItems.Count);
 
-            DialogResult confirm = MessageBox.Show(
+            DialogResult confirm = CustomMessageBox.Show(
                 message,
                 _localization.GetContent("CustomTextWarning", lang),
                 MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Warning);
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button1,
+                _localization,
+                this);
 
             if (confirm != DialogResult.OK)
                 return;
@@ -428,11 +442,14 @@ namespace FileConsistencyManager
             List<ComparisonResult> existingFiles = selectedItems.Where(r => r.Type == IssueType.Types.Exists).ToList();
 
             if (existingFiles.Count > 0)
-                MessageBox.Show(
+                CustomMessageBox.Show(
                     _localization.GetContent("ExistsInformationMessage", lang),
                     _localization.GetContent("CustomTextInformation", lang),
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBoxIcon.Information,
+                    MessageBoxDefaultButton.Button1,
+                    _localization,
+                    this);
 
             switch (actionType)
             {
@@ -453,21 +470,27 @@ namespace FileConsistencyManager
                     break;
                 case ActionType.Archive:
                     if (missingFiles.Count > 0)
-                        MessageBox.Show(
+                        CustomMessageBox.Show(
                             _localization.GetContent("ExistsAndMissingInformationMessage", lang),
                             _localization.GetContent("CustomTextInformation", lang),
                             MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                            MessageBoxIcon.Information,
+                            MessageBoxDefaultButton.Button1,
+                            _localization,
+                            this);
 
                     actionService.ArchiveFile(selectedItems, $@"{_config.Path.ArchivePath}");
                     break;
             }
 
-            MessageBox.Show(
+            CustomMessageBox.Show(
                 _localization.GetContent("ActionCompleteMessage", lang),
                 _localization.GetContent("CustomTextInformation", lang),
                 MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+                MessageBoxIcon.Information,
+                MessageBoxDefaultButton.Button1,
+                _localization,
+                this);
 
             // reload the DataGrid
             btnStart_Click(null, null);
