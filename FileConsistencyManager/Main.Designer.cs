@@ -35,8 +35,6 @@
             btnArchive = new Button();
             btnDelete = new Button();
             pbProgress = new ProgressBar();
-            cmbLanguage = new ComboBox();
-            lblCmbLanguageTitle = new Label();
             lblStatus = new Label();
             lblMissing = new Label();
             lblOrphan = new Label();
@@ -57,10 +55,9 @@
             // 
             // btnStart
             // 
-            btnStart.Location = new Point(12, 542);
-            btnStart.Margin = new Padding(2, 2, 2, 2);
+            btnStart.Location = new Point(17, 903);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(155, 29);
+            btnStart.Size = new Size(221, 48);
             btnStart.TabIndex = 0;
             btnStart.Text = "Start scan";
             btnStart.UseVisualStyleBackColor = true;
@@ -69,29 +66,26 @@
             // cmbFilter
             // 
             cmbFilter.FormattingEnabled = true;
-            cmbFilter.Location = new Point(907, 551);
-            cmbFilter.Margin = new Padding(2, 2, 2, 2);
+            cmbFilter.Location = new Point(1296, 918);
             cmbFilter.Name = "cmbFilter";
-            cmbFilter.Size = new Size(177, 23);
+            cmbFilter.Size = new Size(251, 33);
             cmbFilter.TabIndex = 1;
             cmbFilter.SelectedIndexChanged += cmbFilter_SelectedIndexChanged;
             // 
             // lblCmbFilterTitle
             // 
             lblCmbFilterTitle.AutoSize = true;
-            lblCmbFilterTitle.Location = new Point(907, 534);
-            lblCmbFilterTitle.Margin = new Padding(2, 0, 2, 0);
+            lblCmbFilterTitle.Location = new Point(1296, 890);
             lblCmbFilterTitle.Name = "lblCmbFilterTitle";
-            lblCmbFilterTitle.Size = new Size(36, 15);
+            lblCmbFilterTitle.Size = new Size(54, 25);
             lblCmbFilterTitle.TabIndex = 3;
             lblCmbFilterTitle.Text = "Filter:";
             // 
             // btnArchive
             // 
-            btnArchive.Location = new Point(729, 500);
-            btnArchive.Margin = new Padding(2, 2, 2, 2);
+            btnArchive.Location = new Point(1041, 833);
             btnArchive.Name = "btnArchive";
-            btnArchive.Size = new Size(174, 29);
+            btnArchive.Size = new Size(249, 48);
             btnArchive.TabIndex = 6;
             btnArchive.Text = "Archive";
             btnArchive.UseVisualStyleBackColor = true;
@@ -99,10 +93,9 @@
             // 
             // btnDelete
             // 
-            btnDelete.Location = new Point(907, 500);
-            btnDelete.Margin = new Padding(2, 2, 2, 2);
+            btnDelete.Location = new Point(1296, 833);
             btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(176, 29);
+            btnDelete.Size = new Size(251, 48);
             btnDelete.TabIndex = 7;
             btnDelete.Text = "Delete [Permanent]";
             btnDelete.UseVisualStyleBackColor = true;
@@ -110,88 +103,63 @@
             // 
             // pbProgress
             // 
-            pbProgress.Location = new Point(172, 549);
-            pbProgress.Margin = new Padding(2, 2, 2, 2);
+            pbProgress.Location = new Point(246, 915);
             pbProgress.Name = "pbProgress";
-            pbProgress.Size = new Size(732, 22);
+            pbProgress.Size = new Size(1046, 37);
             pbProgress.TabIndex = 8;
-            // 
-            // cmbLanguage
-            // 
-            cmbLanguage.FormattingEnabled = true;
-            cmbLanguage.Location = new Point(911, 28);
-            cmbLanguage.Margin = new Padding(2, 2, 2, 2);
-            cmbLanguage.Name = "cmbLanguage";
-            cmbLanguage.Size = new Size(173, 23);
-            cmbLanguage.TabIndex = 9;
-            cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
-            // 
-            // lblCmbLanguageTitle
-            // 
-            lblCmbLanguageTitle.AutoSize = true;
-            lblCmbLanguageTitle.Location = new Point(911, 11);
-            lblCmbLanguageTitle.Margin = new Padding(2, 0, 2, 0);
-            lblCmbLanguageTitle.Name = "lblCmbLanguageTitle";
-            lblCmbLanguageTitle.Size = new Size(62, 15);
-            lblCmbLanguageTitle.TabIndex = 10;
-            lblCmbLanguageTitle.Text = "Language:";
             // 
             // lblStatus
             // 
             lblStatus.AutoSize = true;
-            lblStatus.Location = new Point(172, 532);
-            lblStatus.Margin = new Padding(2, 0, 2, 0);
+            lblStatus.Location = new Point(246, 887);
             lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(0, 15);
+            lblStatus.Size = new Size(0, 25);
             lblStatus.TabIndex = 11;
             // 
             // lblMissing
             // 
             lblMissing.AutoSize = true;
-            lblMissing.Location = new Point(41, 20);
-            lblMissing.Margin = new Padding(2, 0, 2, 0);
+            lblMissing.Location = new Point(59, 33);
             lblMissing.Name = "lblMissing";
-            lblMissing.Size = new Size(106, 15);
+            lblMissing.Size = new Size(162, 25);
             lblMissing.TabIndex = 12;
             lblMissing.Text = "Entries in Database";
             // 
             // lblOrphan
             // 
             lblOrphan.AutoSize = true;
-            lblOrphan.Location = new Point(41, 35);
-            lblOrphan.Margin = new Padding(2, 0, 2, 0);
+            lblOrphan.Location = new Point(59, 58);
             lblOrphan.Name = "lblOrphan";
-            lblOrphan.Size = new Size(88, 15);
+            lblOrphan.Size = new Size(132, 25);
             lblOrphan.TabIndex = 13;
             lblOrphan.Text = "Files in Filepath";
             // 
             // lblMissingCount
             // 
             lblMissingCount.AutoSize = true;
-            lblMissingCount.Location = new Point(10, 20);
-            lblMissingCount.Margin = new Padding(2, 0, 2, 0);
+            lblMissingCount.Location = new Point(14, 33);
             lblMissingCount.Name = "lblMissingCount";
-            lblMissingCount.Size = new Size(12, 15);
+            lblMissingCount.Size = new Size(19, 25);
             lblMissingCount.TabIndex = 14;
             lblMissingCount.Text = "/";
             // 
             // lblOrphanCount
             // 
             lblOrphanCount.AutoSize = true;
-            lblOrphanCount.Location = new Point(10, 35);
-            lblOrphanCount.Margin = new Padding(2, 0, 2, 0);
+            lblOrphanCount.Location = new Point(14, 58);
             lblOrphanCount.Name = "lblOrphanCount";
-            lblOrphanCount.Size = new Size(12, 15);
+            lblOrphanCount.Size = new Size(19, 25);
             lblOrphanCount.TabIndex = 15;
             lblOrphanCount.Text = "/";
             // 
             // dgvResults
             // 
             dgvResults.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvResults.Location = new Point(12, 53);
+            dgvResults.Location = new Point(17, 88);
+            dgvResults.Margin = new Padding(4, 5, 4, 5);
             dgvResults.Name = "dgvResults";
             dgvResults.RowHeadersWidth = 62;
-            dgvResults.Size = new Size(1071, 442);
+            dgvResults.Size = new Size(1530, 737);
             dgvResults.TabIndex = 16;
             dgvResults.CellFormatting += dgvResults_CellFormatting;
             dgvResults.SelectionChanged += dgvResults_SelectionChanged;
@@ -200,16 +168,17 @@
             // 
             statusStrip1.ImageScalingSize = new Size(24, 24);
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblConnectionLabel, lblEntriesFound, lblEntriesFoundCount });
-            statusStrip1.Location = new Point(0, 583);
+            statusStrip1.Location = new Point(0, 976);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1092, 22);
+            statusStrip1.Padding = new Padding(1, 0, 20, 0);
+            statusStrip1.Size = new Size(1560, 32);
             statusStrip1.TabIndex = 18;
             statusStrip1.Text = "statusStrip1";
             // 
             // lblConnectionLabel
             // 
             lblConnectionLabel.Name = "lblConnectionLabel";
-            lblConnectionLabel.Size = new Size(933, 17);
+            lblConnectionLabel.Size = new Size(1321, 25);
             lblConnectionLabel.Spring = true;
             lblConnectionLabel.Text = "Connected to: MSSQL-Server Database";
             lblConnectionLabel.TextAlign = ContentAlignment.MiddleLeft;
@@ -217,22 +186,21 @@
             // lblEntriesFound
             // 
             lblEntriesFound.Name = "lblEntriesFound";
-            lblEntriesFound.Size = new Size(132, 17);
+            lblEntriesFound.Size = new Size(199, 25);
             lblEntriesFound.Text = "Entries in DataGridView:";
             lblEntriesFound.TextAlign = ContentAlignment.MiddleRight;
             // 
             // lblEntriesFoundCount
             // 
             lblEntriesFoundCount.Name = "lblEntriesFoundCount";
-            lblEntriesFoundCount.Size = new Size(12, 17);
+            lblEntriesFoundCount.Size = new Size(19, 25);
             lblEntriesFoundCount.Text = "/";
             // 
             // btnSettings
             // 
-            btnSettings.Location = new Point(12, 500);
-            btnSettings.Margin = new Padding(2, 2, 2, 2);
+            btnSettings.Location = new Point(17, 833);
             btnSettings.Name = "btnSettings";
-            btnSettings.Size = new Size(156, 29);
+            btnSettings.Size = new Size(223, 48);
             btnSettings.TabIndex = 19;
             btnSettings.Text = "Config Settings";
             btnSettings.UseVisualStyleBackColor = true;
@@ -241,28 +209,26 @@
             // lblExistsCount
             // 
             lblExistsCount.AutoSize = true;
-            lblExistsCount.Location = new Point(10, 5);
-            lblExistsCount.Margin = new Padding(2, 0, 2, 0);
+            lblExistsCount.Location = new Point(14, 8);
             lblExistsCount.Name = "lblExistsCount";
-            lblExistsCount.Size = new Size(12, 15);
+            lblExistsCount.Size = new Size(19, 25);
             lblExistsCount.TabIndex = 20;
             lblExistsCount.Text = "/";
             // 
             // lblExists
             // 
             lblExists.AutoSize = true;
-            lblExists.Location = new Point(41, 5);
-            lblExists.Margin = new Padding(2, 0, 2, 0);
+            lblExists.Location = new Point(59, 8);
             lblExists.Name = "lblExists";
-            lblExists.Size = new Size(202, 15);
+            lblExists.Size = new Size(305, 25);
             lblExists.TabIndex = 21;
             lblExists.Text = "Entries/Files in Database and Filepath";
             // 
             // Main
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1092, 605);
+            ClientSize = new Size(1560, 1008);
             Controls.Add(lblExists);
             Controls.Add(lblExistsCount);
             Controls.Add(btnSettings);
@@ -273,8 +239,6 @@
             Controls.Add(lblOrphan);
             Controls.Add(lblMissing);
             Controls.Add(lblStatus);
-            Controls.Add(lblCmbLanguageTitle);
-            Controls.Add(cmbLanguage);
             Controls.Add(pbProgress);
             Controls.Add(btnDelete);
             Controls.Add(btnArchive);
@@ -283,7 +247,6 @@
             Controls.Add(btnStart);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             HelpButton = true;
-            Margin = new Padding(2, 2, 2, 2);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "Main";
@@ -305,8 +268,6 @@
         private Button btnArchive;
         private Button btnDelete;
         private ProgressBar pbProgress;
-        private ComboBox cmbLanguage;
-        private Label lblCmbLanguageTitle;
         private Label lblStatus;
         private Label lblMissing;
         private Label lblOrphan;

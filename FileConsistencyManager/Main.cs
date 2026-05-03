@@ -54,7 +54,6 @@ namespace FileConsistencyManager
             SetupGrid();
             SetupButtons();
             SetupComboboxOptions();
-            SetupComboboxLanguage();
             ApplyLanguage(_localization.GetCurrentLanguage());
         }
 
@@ -89,15 +88,6 @@ namespace FileConsistencyManager
 
             cmbFilter.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbFilter.SelectedIndex = currentIndex;
-        }
-
-        private void SetupComboboxLanguage()
-        {
-            cmbLanguage.Items.Add(_localization.GetContent("Culture", "en"));
-            cmbLanguage.Items.Add(_localization.GetContent("Culture", "de"));
-
-            cmbLanguage.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbLanguage.SelectedIndex = _config.Language.Current == "de" ? 1 : 0;
         }
 
         private void SetupGrid()
@@ -209,37 +199,6 @@ namespace FileConsistencyManager
         private void cmbFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             ApplyFilter();
-        }
-
-        private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmbLanguage.SelectedItem.ToString() == "English")
-            {
-                var culture = new System.Globalization.CultureInfo("en-US");
-                System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
-                System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
-                Thread.CurrentThread.CurrentCulture = culture;
-                Thread.CurrentThread.CurrentUICulture = culture;
-
-                _localization.SetCurrentLanguage("en");
-                lang = _localization.GetCurrentLanguage();
-                ApplyLanguage(forcedLang: lang);
-            }
-            else
-            {
-                var culture = new System.Globalization.CultureInfo("de-DE");
-                System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
-                System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
-                Thread.CurrentThread.CurrentCulture = culture;
-                Thread.CurrentThread.CurrentUICulture = culture;
-
-                _localization.SetCurrentLanguage("de");
-                lang = _localization.GetCurrentLanguage();
-                ApplyLanguage(forcedLang: lang);
-            }
-
-            SetupComboboxOptions();
-            if (dgvResults.DataSource != null) RefreshLanguageDataGridView();
         }
 
         #endregion
@@ -539,7 +498,6 @@ namespace FileConsistencyManager
 
             // Labels
             lblCmbFilterTitle.Text = _localization.GetContent("FilterOptionsTitle", forcedLang);
-            lblCmbLanguageTitle.Text = _localization.GetContent("FilterLanguageTitle", forcedLang);
             lblMissing.Text = _localization.GetContent("MissingFilesLabel", forcedLang);
             lblOrphan.Text = _localization.GetContent("OrphanFilesLabel", forcedLang);
             lblExists.Text = _localization.GetContent("ExistsFilesLabel", forcedLang);
@@ -563,7 +521,6 @@ namespace FileConsistencyManager
             ButtonEnabled(enabled);
             btnSettings.Enabled = enabled;
             cmbFilter.Enabled = enabled;
-            cmbLanguage.Enabled = enabled;
         }
 
         private void ButtonEnabled(bool enabled)
